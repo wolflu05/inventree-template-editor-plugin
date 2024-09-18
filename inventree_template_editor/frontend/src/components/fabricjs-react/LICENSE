@@ -1,4 +1,4 @@
-The contents from this folder are copied from the [fabricjs-react](https://github.com/asotog/fabricjs-react/tree/1.2.2) library, which is licensed under the MIT license © [Alejandro Soto](https://github.com/asotog).
+The contents from this folder are inspired by the [fabricjs-react](https://github.com/asotog/fabricjs-react/tree/1.2.2) library, which is licensed under the MIT license © [Alejandro Soto](https://github.com/asotog).
 
 Note:
 Directly using the npm package does not work in preact, because a different JSX runtime is bundled in the npm package than the one used by preact.

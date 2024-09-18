@@ -1,5 +1,5 @@
 import { Trans, t } from '@lingui/macro';
-import { Alert, Box, Button, Group, Modal, Overlay, Stack, Text } from '@mantine/core';
+import { Alert, Button, Group, Overlay, Stack, Text } from '@mantine/core';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import Split from '@uiw/react-split';
 import {

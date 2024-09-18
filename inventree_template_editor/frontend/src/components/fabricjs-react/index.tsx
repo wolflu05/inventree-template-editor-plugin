@@ -1,22 +1,15 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { fabric } from "fabric";
-import {
-  useFabricJSEditor,
-  FabricJSEditor,
-  FabricJSEditorHook,
-} from "./editor";
 
 export interface Props {
   className?: string;
   onReady?: (canvas: fabric.Canvas) => void;
 }
 
-/**
- * Fabric canvas as component
- */
-const FabricJSCanvas = ({ className, onReady }: Props) => {
+export const FabricJSCanvas = ({ className, onReady }: Props) => {
   const canvasEl = useRef(null);
   const canvasElParent = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const canvas = new fabric.Canvas(canvasEl.current);
     const setCurrentDimensions = () => {
@@ -40,6 +33,7 @@ const FabricJSCanvas = ({ className, onReady }: Props) => {
       window.removeEventListener("resize", resizeCanvas);
     };
   }, []);
+
   return (
     <div ref={canvasElParent} className={className}>
       <canvas ref={canvasEl} />
@@ -47,5 +41,27 @@ const FabricJSCanvas = ({ className, onReady }: Props) => {
   );
 };
 
-export { FabricJSCanvas, useFabricJSEditor };
-export type { FabricJSEditor, FabricJSEditorHook };
+export const useFabricJSEditor = (): FabricJSEditorHook => {
+  const [canvas, setCanvas] = useState<null | fabric.Canvas>(null);
+
+  const editor = useMemo(
+    () => canvas ? { canvas } : undefined,
+    [canvas]
+  );
+
+  return {
+    onReady: (canvasReady: fabric.Canvas): void => {
+      setCanvas(canvasReady)
+    },
+    editor
+  }
+}
+
+export interface FabricJSEditor {
+  canvas: fabric.Canvas
+}
+
+export interface FabricJSEditorHook {
+  editor?: FabricJSEditor;
+  onReady: (canvas: fabric.Canvas) => void
+}
