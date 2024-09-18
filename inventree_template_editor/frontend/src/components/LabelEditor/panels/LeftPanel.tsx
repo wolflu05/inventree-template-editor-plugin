@@ -49,7 +49,7 @@ export function LeftPanel() {
     <Stack p={4}>
       {LabelEditorObjects.map((component) => (
         <Tooltip label={component.name} key={component.key} position="right">
-          <ActionIcon onClick={addComponent(component)}>
+          <ActionIcon onClick={addComponent(component)} variant="light">
             <component.icon size={'1.25rem'} />
           </ActionIcon>
         </Tooltip>

@@ -44,3 +44,20 @@ export type TemplateEditorUIFeature = {
   };
   renderReturnType: void;
 };
+
+export type GetFeatureFunctionType =
+  PluginUIGetFeatureType<TemplateEditorUIFeature>;
+export type GetFeatureFunctionParams = Parameters<
+  PluginUIGetFeatureType<BaseUIFeature>
+>[0];
+
+type EditorProps = {
+  template: TemplateI;
+};
+type EditorRef = {
+  setCode: (code: string) => void | Promise<void>;
+  getCode: () => (string | undefined) | Promise<string | undefined>;
+};
+export type EditorComponent = React.ForwardRefExoticComponent<
+  EditorProps & React.RefAttributes<EditorRef>
+>;

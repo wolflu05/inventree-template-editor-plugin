@@ -1,5 +1,5 @@
 import { Trans, t } from '@lingui/macro';
-import { Alert, Button, Group, Overlay, Stack, Text } from '@mantine/core';
+import { Alert, Box, Button, Group, Modal, Overlay, Stack, Text } from '@mantine/core';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import Split from '@uiw/react-split';
 import {
@@ -133,8 +133,9 @@ export const LabelEditorComponentE: EditorComponent = forwardRef(
                 title=""
                 color="red"
                 maw={400}
+                bg="var(--mantine-color-red-1)"
               >
-                <Stack spacing="xs">
+                <Stack gap="xs">
                   <Text>
                     <Trans>
                       This doesn't look like a valid label designer template,
@@ -149,7 +150,7 @@ export const LabelEditorComponentE: EditorComponent = forwardRef(
                   </Text>
                 </Stack>
 
-                <Group position="right">
+                <Group pos="right">
                   <Button
                     color="red"
                     mt={20}
@@ -166,7 +167,7 @@ export const LabelEditorComponentE: EditorComponent = forwardRef(
             </Overlay>
           )}
         </Stack>
-      </LabelEditorContext.Provider>
+      </LabelEditorContext.Provider >
     );
   }
 );

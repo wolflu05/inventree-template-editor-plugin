@@ -249,7 +249,7 @@ const DocumentRightPanel: RightPanelComponent = () => {
   });
 
   return (
-    <Stack p={10} spacing="lg">
+    <Stack p={10} gap="lg">
       <InputGroup state={dimensions} />
       <InputGroup state={unit} />
       <InputGroup state={grid} />
@@ -444,7 +444,7 @@ export function RightPanel() {
       <Tabs
         orientation="vertical"
         value={activePanel}
-        onTabChange={setActivePanel as (panel: string) => void}
+        onChange={setActivePanel as (panel: string | null) => void}
         placement="right"
         style={{ flex: 1, display: 'flex' }}
         styles={(theme) => ({
@@ -467,7 +467,7 @@ export function RightPanel() {
               <Tabs.Tab
                 key={panel.key}
                 value={panel.key}
-                icon={<panel.icon size="1.25rem" style={{ margin: '-4px' }} />}
+                leftSection={<panel.icon size="1.25rem" style={{ margin: '-4px' }} />}
                 data-object-specific={panel.requiresSelection}
               />
             </Tooltip>

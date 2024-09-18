@@ -12,7 +12,7 @@
     "@lingui/core": "^4.11.4",
     "@lingui/macro": "^4.11.4",
     "@lingui/react": "^4.11.4",
-    "@mantine/core": "^6.0.22",
+    "@mantine/core": "^7.12.2",
     "@tabler/icons-react": "^3.17.0",
     "@uiw/react-split": "^5.9.3",
     "fabric": "^5.4.0",

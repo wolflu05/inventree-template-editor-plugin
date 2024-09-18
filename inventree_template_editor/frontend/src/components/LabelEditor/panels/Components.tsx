@@ -208,16 +208,6 @@ export const InputGroup = <T extends any[]>({
           value={value[key]}
           onChange={(value) => setValue(key, value)}
           onBlur={() => state.onBlur?.(key, value[key], value, value, state)}
-          precision={10}
-          formatter={(value) => {
-            const v = parseFloat(value);
-
-            if (Number.isNaN(v) || !Number.isFinite(v)) {
-              return value;
-            }
-
-            return `${v}`;
-          }}
           stepHoldDelay={500}
           stepHoldInterval={100}
           rightSectionProps={{
@@ -297,7 +287,6 @@ export const InputGroup = <T extends any[]>({
         <Select
           label={input.label}
           disabled={input.disabled}
-          // @ts-expect-error TODO: fix this, not sure why it's referring to HTML attributes
           data={input.selectOptions}
           size="xs"
           style={{ width: '150px' }}
@@ -346,7 +335,7 @@ export const InputGroup = <T extends any[]>({
 
     if (input.type === 'radio') {
       return (
-        <Group noWrap>
+        <Group wrap="nowrap">
           {input.radioOptions?.map((option, idx) => (
             <Checkbox
               key={idx}
@@ -386,14 +375,14 @@ export const InputGroup = <T extends any[]>({
 
   return (
     <Stack style={{ gap: 0 }}>
-      <Group noWrap>
+      <Group wrap="nowrap">
         <Icon size="1.25rem" />
-        <Title order={5} ml={'-10px'} weight={500}>
+        <Title order={5} ml={'-10px'} fw={500}>
           {name}
         </Title>
       </Group>
       {inputRows.map((row, rowIdx) => (
-        <Group key={rowIdx} noWrap style={{ gap: '4px' }}>
+        <Group key={rowIdx} wrap="nowrap" style={{ gap: '4px' }}>
           {row.columns.map((input, idx) => (
             <Tooltip
               label={input.tooltip}

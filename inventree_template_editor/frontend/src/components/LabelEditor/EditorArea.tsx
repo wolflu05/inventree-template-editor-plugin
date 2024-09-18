@@ -1,4 +1,3 @@
-import { createStyles } from '@mantine/core';
 import { fabric } from 'fabric';
 import { FabricJSCanvas, useFabricJSEditor } from '../fabricjs-react';
 import { useCallback, useEffect, useRef } from 'react';
@@ -11,18 +10,9 @@ import {
 import { LabelEditorObjects } from './objects';
 import { unitToPixel } from './utils';
 import { useEvents } from "../../hooks/useEvents";
-
-const useStyles = createStyles((theme) => ({
-  editorCanvas: {
-    border: `1px solid ${theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[3]
-      }`,
-    flex: 1
-  }
-}));
+import classes from './EditorArea.module.css';
 
 export const EditorArea = () => {
-  const { classes } = useStyles();
-
   const { editor, onReady } = useFabricJSEditor();
 
   const editorState = useRef({

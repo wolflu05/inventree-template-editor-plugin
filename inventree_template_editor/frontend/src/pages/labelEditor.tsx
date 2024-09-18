@@ -2,10 +2,10 @@ import { render as preact_render } from 'preact'
 import { LabelEditorComponentE } from "../components/LabelEditor";
 import { Base } from "../components/Base";
 import { useEffect, useRef } from "preact/hooks";
-import { GetAndSetCodeHandlers, PluginUIGetFeatureType, TemplateEditorUIFeature } from "../types/InvenTree";
+import { GetAndSetCodeHandlers, GetFeatureFunctionParams, GetFeatureFunctionType } from "../types/InvenTree";
 
-const App = ({ featureContext }: { featureContext: TemplateEditorUIFeature['featureContext'] }) => {
-  const { template, registerHandlers } = featureContext;
+const App = ({ params }: { params: GetFeatureFunctionParams }) => {
+  const { featureContext: { template, registerHandlers } } = params;
   const editorRef = useRef<GetAndSetCodeHandlers>();
   const hasRegisteredRef = useRef(false);
 
@@ -22,12 +22,12 @@ const App = ({ featureContext }: { featureContext: TemplateEditorUIFeature['feat
   }, [editorRef.current]);
 
   return (
-    <Base>
+    <Base params={params}>
       <LabelEditorComponentE template={template} ref={editorRef as any} />
     </Base>
   )
 }
 
-export const getFeature: PluginUIGetFeatureType<TemplateEditorUIFeature> = ({ featureContext }) => {
-  preact_render(<App featureContext={featureContext} />, featureContext.ref);
+export const getFeature: GetFeatureFunctionType = (params) => {
+  preact_render(<App params={params} />, params.featureContext.ref);
 }

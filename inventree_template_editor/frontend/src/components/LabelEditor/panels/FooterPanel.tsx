@@ -30,7 +30,7 @@ export function FooterPanel() {
       <Group>
         <Text w={120}>Zoom: {Math.round(zoom * 1000) / 10}%</Text>
         <Tooltip label={t`Zoom to fit`} position="top">
-          <ActionIcon onClick={() => zoomToFit?.()} p={2}>
+          <ActionIcon onClick={() => zoomToFit?.()} p={2} variant="light">
             <IconArrowAutofitWidth size="1.5rem" />
           </ActionIcon>
         </Tooltip>
