@@ -22,7 +22,7 @@ class InvenTreeTemplateEditorPlugin(InvenTreePlugin, UserInterfaceMixin):
     NAME = "InvenTreeTemplateEditorPlugin"
 
     def get_ui_features(self, feature_type: FeatureType, context: dict, request: Request) -> list[UIFeature]:
-        if feature_type != "template_editor" or context.get("template_type", None) != "label":
+        if feature_type != "template_editor" or context.get("template_type", None) != "labeltemplate":
             return []
 
         IS_DEV = settings.CUSTOMIZE.get("inventree_template_editor_plugin_dev", False)
@@ -31,8 +31,9 @@ class InvenTreeTemplateEditorPlugin(InvenTreePlugin, UserInterfaceMixin):
             {
                 "feature_type": "template_editor",
                 "options": {
+                    "key": "label-designer",
                     "title": _("Label Designer"),
-                    "slug": "label-designer",
+                    "icon": "build"
                 },
                 "source": plugin_static({}, "labelEditor.dev.js" if IS_DEV else "dist/labelEditor.js", plugin="inventree-template-editor-plugin"),
             }

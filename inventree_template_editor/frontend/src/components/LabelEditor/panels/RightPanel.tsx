@@ -49,6 +49,7 @@ type RightPanelType = {
   icon: TablerIconType;
   panel: RightPanelComponent;
   header?: RightPanelComponent;
+  requiresSelection?: boolean;
 };
 
 type UsePageSettingsInputGroupStateProps<T extends any[]> = {
@@ -421,7 +422,8 @@ const panels: RightPanelType[] = [
     key: 'object-options',
     name: ObjectOptionsRightPanelName,
     icon: IconLayoutCards,
-    panel: ObjectOptionsRightPanel
+    panel: ObjectOptionsRightPanel,
+    requiresSelection: true,
   }
 ];
 export type RightPanelKeyType = 'document' | 'objects' | 'object-options';
@@ -431,6 +433,7 @@ export function RightPanel() {
     panels[0].key as RightPanelKeyType
   );
   const labelEditorStore = useLabelEditorStore();
+  const selectedObjects = useLabelEditorState((s) => s.selectedObjects.length);
 
   useEffect(() => {
     labelEditorStore.setState({ setRightPanel: setActivePanel });
@@ -444,9 +447,16 @@ export function RightPanel() {
         onTabChange={setActivePanel as (panel: string) => void}
         placement="right"
         style={{ flex: 1, display: 'flex' }}
+        styles={(theme) => ({
+          tab: {
+            '&[data-object-specific]': {
+              backgroundColor: theme.colors.blue[0],
+            },
+          }
+        })}
       >
         <Tabs.List>
-          {panels.map((panel) => (
+          {panels.filter(panel => panel.requiresSelection ? selectedObjects > 0 : true).map((panel) => (
             <Tooltip
               label={
                 typeof panel.name === 'function' ? <panel.name /> : panel.name
@@ -458,12 +468,13 @@ export function RightPanel() {
                 key={panel.key}
                 value={panel.key}
                 icon={<panel.icon size="1.25rem" style={{ margin: '-4px' }} />}
+                data-object-specific={panel.requiresSelection}
               />
             </Tooltip>
           ))}
         </Tabs.List>
 
-        {panels.map((panel) => (
+        {panels.filter(panel => panel.requiresSelection ? selectedObjects > 0 : true).map((panel) => (
           <Tabs.Panel
             key={panel.key}
             value={panel.key}

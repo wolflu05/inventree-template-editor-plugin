@@ -2,11 +2,11 @@ import { render as preact_render } from 'preact'
 import { LabelEditorComponentE } from "../components/LabelEditor";
 import { Base } from "../components/Base";
 import { useEffect, useRef } from "preact/hooks";
-import { EditorRef, TemplateEditorRenderContextType } from "../types/InvenTree";
+import { GetAndSetCodeHandlers, PluginUIGetFeatureType, TemplateEditorUIFeature } from "../types/InvenTree";
 
-const App = ({ renderContext }: { renderContext: TemplateEditorRenderContextType }) => {
-  const { template, registerHandlers } = renderContext;
-  const editorRef = useRef<EditorRef>();
+const App = ({ featureContext }: { featureContext: TemplateEditorUIFeature['featureContext'] }) => {
+  const { template, registerHandlers } = featureContext;
+  const editorRef = useRef<GetAndSetCodeHandlers>();
   const hasRegisteredRef = useRef(false);
 
   useEffect(() => {
@@ -28,6 +28,6 @@ const App = ({ renderContext }: { renderContext: TemplateEditorRenderContextType
   )
 }
 
-export const getFeature = (ref: HTMLDivElement, { renderContext }: { renderContext: TemplateEditorRenderContextType }) => {
-  preact_render(<App renderContext={renderContext} />, ref);
+export const getFeature: PluginUIGetFeatureType<TemplateEditorUIFeature> = ({ featureContext }) => {
+  preact_render(<App featureContext={featureContext} />, featureContext.ref);
 }
