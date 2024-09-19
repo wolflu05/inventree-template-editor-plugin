@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from re import T
 import setuptools
 
 from inventree_template_editor.version import TEMPLATE_EDITOR_PLUGIN_VERSION

@@ -79,7 +79,7 @@ jobs:
 
   publish:
     if: github.event_name == 'release' && github.event.action == 'published'
-    needs: [build-js]
+    needs: [style-python, build-js]
     name: 📦 Publish to PyPi
     runs-on: ubuntu-latest
     environment:
