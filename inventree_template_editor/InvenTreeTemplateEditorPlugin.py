@@ -9,6 +9,7 @@ from plugin.templatetags.plugin_extras import plugin_static
 
 from .version import TEMPLATE_EDITOR_PLUGIN_VERSION
 
+
 class InvenTreeTemplateEditorPlugin(InvenTreePlugin, UserInterfaceMixin):
     AUTHOR = "wolflu05"
     DESCRIPTION = "InvenTree template editor plugin"
@@ -25,7 +26,7 @@ class InvenTreeTemplateEditorPlugin(InvenTreePlugin, UserInterfaceMixin):
         if feature_type != "template_editor" or context.get("template_type", None) != "labeltemplate":
             return []
 
-        IS_DEV = settings.CUSTOMIZE.get("inventree_template_editor_plugin_dev", False)
+        is_dev = settings.CUSTOMIZE.get("inventree_template_editor_plugin_dev", False)
 
         return [
             {
@@ -35,6 +36,6 @@ class InvenTreeTemplateEditorPlugin(InvenTreePlugin, UserInterfaceMixin):
                     "title": _("Label Designer"),
                     "icon": "build"
                 },
-                "source": plugin_static({}, "labelEditor.dev.js" if IS_DEV else "dist/labelEditor.js", plugin="inventree-template-editor-plugin"),
+                "source": plugin_static({}, "labelEditor.dev.js" if is_dev else "dist/labelEditor.js", plugin="inventree-template-editor-plugin"),
             }
         ]
