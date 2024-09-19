@@ -1,20 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { fabric } from "fabric";
+import { Canvas } from "fabric";
 
 export interface Props {
   className?: string;
-  onReady?: (canvas: fabric.Canvas) => void;
+  onReady?: (canvas: Canvas) => void;
 }
 
 export const FabricJSCanvas = ({ className, onReady }: Props) => {
-  const canvasEl = useRef(null);
+  const canvasEl = useRef();
   const canvasElParent = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const canvas = new fabric.Canvas(canvasEl.current);
+    const canvas = new Canvas(canvasEl.current);
     const setCurrentDimensions = () => {
-      canvas.setHeight(canvasElParent.current?.clientHeight || 0);
-      canvas.setWidth(canvasElParent.current?.clientWidth || 0);
+      canvas.setDimensions({
+        width: canvasElParent.current?.clientWidth || 0,
+        height: canvasElParent.current?.clientHeight || 0,
+      });
       canvas.renderAll();
     };
     const resizeCanvas = () => {
@@ -36,13 +38,13 @@ export const FabricJSCanvas = ({ className, onReady }: Props) => {
 
   return (
     <div ref={canvasElParent} className={className}>
-      <canvas ref={canvasEl} />
+      <canvas ref={canvasEl as any} />
     </div>
   );
 };
 
 export const useFabricJSEditor = (): FabricJSEditorHook => {
-  const [canvas, setCanvas] = useState<null | fabric.Canvas>(null);
+  const [canvas, setCanvas] = useState<null | Canvas>(null);
 
   const editor = useMemo(
     () => canvas ? { canvas } : undefined,
@@ -50,7 +52,7 @@ export const useFabricJSEditor = (): FabricJSEditorHook => {
   );
 
   return {
-    onReady: (canvasReady: fabric.Canvas): void => {
+    onReady: (canvasReady: Canvas): void => {
       setCanvas(canvasReady)
     },
     editor
@@ -58,10 +60,10 @@ export const useFabricJSEditor = (): FabricJSEditorHook => {
 }
 
 export interface FabricJSEditor {
-  canvas: fabric.Canvas
+  canvas: Canvas
 }
 
 export interface FabricJSEditorHook {
   editor?: FabricJSEditor;
-  onReady: (canvas: fabric.Canvas) => void
+  onReady: (canvas: Canvas) => void
 }

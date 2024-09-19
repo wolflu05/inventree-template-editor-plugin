@@ -7,7 +7,7 @@ import {
   IconPalette,
   IconTag
 } from '@tabler/icons-react';
-import { fabric } from 'fabric';
+import { FabricObject, CanvasEvents } from 'fabric';
 import { useEffect, useMemo } from 'react';
 
 import { useLabelEditorState } from '../LabelEditorContext';
@@ -28,12 +28,12 @@ type UseObjectInputGroupStateProps<T extends any[]> = {
     objAttr: string;
     inputKey: string;
   }[];
-  triggerUpdateEvents?: fabric.EventName[];
+  triggerUpdateEvents?: (keyof CanvasEvents)[];
   beforeCanvasUpdate?: (
     values: Record<string, any>,
-    obj: fabric.Object
+    obj: FabricObject
   ) => void;
-  afterCanvasUpdate?: (values: Record<string, any>, obj: fabric.Object) => void;
+  afterCanvasUpdate?: (values: Record<string, any>, obj: FabricObject) => void;
 } & UseInputGroupProps<T>;
 
 export const useObjectInputGroupState = <T extends any[]>(
@@ -87,7 +87,7 @@ export const useObjectInputGroupState = <T extends any[]>(
       editor?.canvas.fire('object:modified', { target: obj });
       editor?.canvas.requestRenderAll();
     },
-    updateInputs: (obj: fabric.Object) => {
+    updateInputs: (obj: FabricObject) => {
       // @ts-ignore-next-line
       const unit = obj[props.connectionUnitKey];
 
@@ -116,7 +116,7 @@ export const useObjectInputGroupState = <T extends any[]>(
     editor?.canvas,
     (on) => {
       for (const event of props.triggerUpdateEvents || []) {
-        on(event, (e) => inputState.triggerUpdate(e.target as fabric.Object));
+        on(event, (e) => inputState.triggerUpdate((e as any).target as FabricObject));
       }
     },
     [editor]

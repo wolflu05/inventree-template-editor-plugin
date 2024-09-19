@@ -1,7 +1,7 @@
 import { t } from '@lingui/macro';
 import { Stack } from '@mantine/core';
 import { IconBoxMargin, IconDimensions, IconQrcode } from '@tabler/icons-react';
-import { fabric } from 'fabric';
+import { FabricObject, util } from 'fabric';
 import QRCodeSVG from 'qrcode-svg';
 
 import { LabelEditorObject } from '.';
@@ -11,7 +11,7 @@ import { unitToPixel } from '../utils';
 import {
   GeneralSettingBlock,
   buildStyle,
-  createFabricObject,
+  getCustomFabricBaseObject,
   styleHelper
 } from './_BaseObject';
 import {
@@ -91,6 +91,161 @@ const QrCodeBorderInputGroup = () => {
   return <InputGroup state={border} />;
 };
 
+// inspired by https://medium.com/@andras.tovishati/how-to-create-qr-code-object-type-in-fabric-js-e99b84e8d6c5
+class QrCodeObject extends getCustomFabricBaseObject(FabricObject, ['data', 'border', 'box_size']) {
+  static type = 'qrcode';
+
+  data: string;
+  size: number;
+  strokeWidth: number;
+  stroke: string;
+  fill: string;
+  border: number;
+  box_size: number;
+
+  private path: any[] = []
+
+  constructor(props: any) {
+    super(props);
+
+    this.data = props.data ?? 'qr_data';
+    this.size = props.size ?? 40;
+    this.strokeWidth = props.strokeWidth ?? 0;
+    this.stroke = props.stroke ?? '#000000';
+    this.fill = props.fill ?? '#ffffff';
+    this.border = props.border ?? 0;
+    this.box_size = props.box_size ?? 20;
+    this.width = this.size;
+    this.height = this.size;
+
+    // scaling to the right does not work properly
+    this.setControlsVisibility({
+      ml: false,
+      mr: false,
+      mt: false,
+      mb: false
+    });
+
+    this._createPathData();
+  }
+
+  // limit scaling so that the qr code is always a multiple of the QR grid size
+  getGridSize(settings: PageSettingsType) {
+    const gridSize =
+      unitToPixel(settings.grid['size.size'], settings.grid['size.unit']) *
+      (21 + this.border * 2);
+
+    return gridSize;
+  }
+
+  _createPathData() {
+    const qr = new QRCodeSVG({
+      content: this.data ?? "A",
+      padding: this.border ?? 0,
+      width: this.size ?? 40,
+      height: this.size ?? 40,
+      color: this.stroke ?? '#000000',
+      background: this.fill ?? '#ffffff',
+      ecl: 'L',
+      join: true
+    });
+    const svg = qr.svg();
+    const match = svg.match(/<path[^>]*?d=(["\'])?((?:.(?!\1|>))*.?)\1?/);
+    const path = match ? match[2] : '';
+    this.path = util.makePathSimpler(util.parsePath(path));
+    this.dirty = true;
+    return this;
+  }
+
+  _set(key: string, value: any) {
+    super._set(key, value);
+    switch (key) {
+      case 'data':
+      case 'border':
+        this._createPathData();
+        break;
+      case 'size':
+        if (value <= 0) value = 1;
+        this.set({
+          width: value,
+          height: value
+        });
+        this._createPathData();
+        break;
+      case 'width':
+        if (value <= 0) value = 1;
+        this.height = value;
+        this.size = value;
+        this._createPathData();
+        break;
+      case 'height':
+        if (value <= 0) value = 1;
+        this.size = value;
+        this.width = value;
+        this._createPathData();
+        break;
+      default:
+        break;
+    }
+    return this;
+  }
+
+  _renderQRCode(ctx: CanvasRenderingContext2D) {
+    let current,
+      i,
+      x = 0,
+      y = 0,
+      w2 = this.width / 2,
+      h2 = this.height / 2;
+    ctx.beginPath();
+    for (i = 0; i < this.path.length; i++) {
+      current = this.path[i];
+      x = current[1];
+      y = current[2];
+      switch (current[0]) {
+        case 'M':
+          ctx.moveTo(x - w2, y - h2);
+          break;
+        case 'L':
+          ctx.lineTo(x - w2, y - h2);
+          break;
+        case 'Z':
+          ctx.closePath();
+          break;
+        default:
+          break;
+      }
+    }
+    ctx.save();
+    ctx.fillStyle = this.stroke;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  _renderBackground(ctx: CanvasRenderingContext2D) {
+    const w = this.width;
+    const h = this.height;
+    const x = -(w / 2);
+    const y = -(h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + w, y);
+    ctx.lineTo(x + w, y + h);
+    ctx.lineTo(x, y + h);
+    ctx.lineTo(x, y);
+    ctx.closePath();
+    ctx.save();
+    ctx.fillStyle = this.fill;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  _render(ctx: CanvasRenderingContext2D) {
+    this._renderBackground(ctx);
+    this._renderQRCode(ctx);
+  }
+}
+
 export const QrCode: LabelEditorObject = {
   key: 'qrcode',
   name: t`QR Code`,
@@ -130,154 +285,7 @@ export const QrCode: LabelEditorObject = {
       )
     }
   ],
-  // inspired by https://medium.com/@andras.tovishati/how-to-create-qr-code-object-type-in-fabric-js-e99b84e8d6c5
-  fabricElement: createFabricObject(
-    fabric.Object,
-    {
-      type: 'qrcode',
-      data: 'qr_data',
-      size: 40,
-      strokeWidth: 0,
-      stroke: '#000000',
-      fill: '#ffffff',
-      border: 0,
-      box_size: 20,
-
-      initialize(props) {
-        this.width = this.size;
-        this.height = this.size;
-
-        // scaling to the right does not work properly
-        this.setControlsVisibility({
-          ml: false,
-          mr: false,
-          mt: false,
-          mb: false
-        });
-
-        this.callSuper('initialize', props);
-        this._createPathData();
-      },
-
-      // limit scaling so that the qr code is always a multiple of the QR grid size
-      getGridSize(settings: PageSettingsType) {
-        const gridSize =
-          unitToPixel(settings.grid['size.size'], settings.grid['size.unit']) *
-          (21 + this.border * 2);
-
-        return gridSize;
-      },
-
-      _createPathData() {
-        const qr = new QRCodeSVG({
-          content: this.data,
-          padding: this.border,
-          width: this.size,
-          height: this.size,
-          color: this.stroke,
-          background: this.fill,
-          ecl: 'L',
-          join: true
-        });
-        const svg = qr.svg();
-        const match = svg.match(/<path[^>]*?d=(["\'])?((?:.(?!\1|>))*.?)\1?/);
-        const path = match ? match[2] : '';
-        // @ts-ignore-next-line
-        this.path = fabric.util.makePathSimpler(fabric.util.parsePath(path));
-        this.dirty = true;
-        return this;
-      },
-
-      _set(key: string, value: any) {
-        this.callSuper('_set', key, value);
-        switch (key) {
-          case 'data':
-          case 'border':
-            this._createPathData();
-            break;
-          case 'size':
-            if (value <= 0) value = 1;
-            this.set({
-              width: value,
-              height: value
-            });
-            this._createPathData();
-            break;
-          case 'width':
-            if (value <= 0) value = 1;
-            this.height = value;
-            this.size = value;
-            this._createPathData();
-            break;
-          case 'height':
-            if (value <= 0) value = 1;
-            this.size = value;
-            this.width = value;
-            this._createPathData();
-            break;
-          default:
-            break;
-        }
-        return this;
-      },
-
-      _renderQRCode(ctx: CanvasRenderingContext2D) {
-        let current,
-          i,
-          x = 0,
-          y = 0,
-          w2 = this.width / 2,
-          h2 = this.height / 2;
-        ctx.beginPath();
-        for (i = 0; i < this.path.length; i++) {
-          current = this.path[i];
-          x = current[1];
-          y = current[2];
-          switch (current[0]) {
-            case 'M':
-              ctx.moveTo(x - w2, y - h2);
-              break;
-            case 'L':
-              ctx.lineTo(x - w2, y - h2);
-              break;
-            case 'Z':
-              ctx.closePath();
-              break;
-            default:
-              break;
-          }
-        }
-        ctx.save();
-        ctx.fillStyle = this.stroke;
-        ctx.fill();
-        ctx.restore();
-      },
-
-      _renderBackground(ctx: CanvasRenderingContext2D) {
-        const w = this.width;
-        const h = this.height;
-        const x = -(w / 2);
-        const y = -(h / 2);
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x + w, y);
-        ctx.lineTo(x + w, y + h);
-        ctx.lineTo(x, y + h);
-        ctx.lineTo(x, y);
-        ctx.closePath();
-        ctx.save();
-        ctx.fillStyle = this.fill;
-        ctx.fill();
-        ctx.restore();
-      },
-
-      _render(ctx: CanvasRenderingContext2D) {
-        this._renderBackground(ctx);
-        this._renderQRCode(ctx);
-      }
-    },
-    ['data', 'border', 'box_size']
-  ),
+  fabricElement: QrCodeObject,
   export: {
     style: (object, id) => {
       return buildStyle(id, [

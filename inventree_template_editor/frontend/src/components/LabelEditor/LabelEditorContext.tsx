@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import { FabricObject } from 'fabric';
 import { FabricJSEditor } from '../fabricjs-react';
 import { createContext, useContext } from 'react';
 import { createStore, useStore } from 'zustand';
@@ -7,8 +7,8 @@ import { RightPanelKeyType } from './panels/RightPanel';
 
 export type LabelEditorState = {
   editor?: FabricJSEditor;
-  objects: fabric.Object[];
-  selectedObjects: fabric.Object[];
+  objects: FabricObject[];
+  selectedObjects: FabricObject[];
   handleDrag?: (clientX?: number, clientY?: number) => void;
   zoomToFit?: () => void;
   setRightPanel?: (panel: RightPanelKeyType) => void;

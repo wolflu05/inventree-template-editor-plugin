@@ -1,3 +1,4 @@
+import { FabricObject } from 'fabric';
 import { ActionIcon, Stack, Tooltip } from '@mantine/core';
 import { useCallback } from 'react';
 
@@ -6,6 +7,7 @@ import {
   useLabelEditorStore
 } from '../LabelEditorContext';
 import { LabelEditorObject, LabelEditorObjects } from '../objects';
+import { CustomFabricObject } from "../objects/_BaseObject";
 
 export function LeftPanel() {
   const editor = useLabelEditorState((s) => s.editor);
@@ -26,10 +28,10 @@ export function LeftPanel() {
 
       // get the next name for the object
       let nextNum = 0;
-      editor.canvas.getObjects().forEach((o: fabric.Object) => {
+      editor.canvas.getObjects().forEach((o: FabricObject) => {
         if (o.type === obj.type) {
           // calculate the next free number for this element
-          const num = (o.name || '').match(/\((\d+)\)/);
+          const num = ((o as unknown as CustomFabricObject).name || '').match(/\((\d+)\)/);
           if (num) {
             nextNum = Math.max(nextNum, parseInt(num[1], 10) + 1);
           }

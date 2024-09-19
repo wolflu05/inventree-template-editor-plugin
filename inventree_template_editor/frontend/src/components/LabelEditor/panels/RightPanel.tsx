@@ -38,6 +38,7 @@ import {
   useInputGroupState
 } from './Components';
 import { TablerIconType } from "../../../types";
+import { CustomFabricObject } from "../objects/_BaseObject";
 
 type RightPanelComponent = (props: {}) => React.ReactElement;
 
@@ -295,7 +296,7 @@ const ObjectsRightPanel: RightPanelComponent = () => {
                 fontWeight: selectedObjectsList.includes(object) ? 600 : 400
               }}
             >
-              {object.name}
+              {(object as unknown as CustomFabricObject).name}
             </Text>
           </List.Item>
         ))}
@@ -447,13 +448,6 @@ export function RightPanel() {
         onChange={setActivePanel as (panel: string | null) => void}
         placement="right"
         style={{ flex: 1, display: 'flex' }}
-        styles={(theme) => ({
-          tab: {
-            '&[data-object-specific]': {
-              backgroundColor: theme.colors.blue[0],
-            },
-          }
-        })}
       >
         <Tabs.List>
           {panels.filter(panel => panel.requiresSelection ? selectedObjects > 0 : true).map((panel) => (
@@ -468,7 +462,7 @@ export function RightPanel() {
                 key={panel.key}
                 value={panel.key}
                 leftSection={<panel.icon size="1.25rem" style={{ margin: '-4px' }} />}
-                data-object-specific={panel.requiresSelection}
+                bg={panel.requiresSelection ? 'var(--mantine-color-blue-0)' : undefined}
               />
             </Tooltip>
           ))}

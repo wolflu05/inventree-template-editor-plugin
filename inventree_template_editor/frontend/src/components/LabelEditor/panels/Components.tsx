@@ -207,6 +207,7 @@ export const InputGroup = <T extends any[]>({
           label={input.label}
           value={value[key]}
           onChange={(value) => setValue(key, value)}
+          decimalScale={10}
           onBlur={() => state.onBlur?.(key, value[key], value, value, state)}
           stepHoldDelay={500}
           stepHoldInterval={100}
@@ -288,6 +289,10 @@ export const InputGroup = <T extends any[]>({
           label={input.label}
           disabled={input.disabled}
           data={input.selectOptions}
+          searchable
+          comboboxProps={{
+            withinPortal: false,
+          }}
           size="xs"
           style={{ width: '150px' }}
           value={value[key]}
@@ -336,38 +341,49 @@ export const InputGroup = <T extends any[]>({
     if (input.type === 'radio') {
       return (
         <Group wrap="nowrap">
-          {input.radioOptions?.map((option, idx) => (
-            <Checkbox
-              key={idx}
-              mt={10}
-              mr={8}
-              style={{ alignSelf: 'flex-end' }}
-              styles={{
-                label: { fontSize: '0.875rem', cursor: 'pointer' },
-                input: { cursor: 'pointer' }
-              }}
-              icon={({ className }) =>
-                option.icon ? (
-                  <option.icon className={className} />
-                ) : (
-                  <IconCheck className={className} />
-                )
-              }
-              disabled={input.disabled}
-              label={option.label ? option.label : undefined}
-              indeterminate={option.icon ? value[key] !== option.value : false}
-              checked={value[key] === option.value}
-              onChange={() => {
-                setValue(key, option.value);
-                const newValue = {
-                  ...value,
-                  [key]: option.value
-                };
-                state.onBlur?.(key, option.value, newValue, value, state);
-              }}
-              size={option.icon ? 'lg' : undefined}
-            />
-          ))}
+          {input.radioOptions?.map((option, idx) => {
+            // use indeterminate state if icon is set, because icons are only rendered for checked and indeterminate state
+            const indeterminate = option.icon ? value[key] !== option.value : false;
+
+            return (
+              <Checkbox
+                key={idx}
+                mt={10}
+                mr={8}
+                style={{ alignSelf: 'flex-end' }}
+                styles={{
+                  label: { fontSize: '0.875rem', cursor: 'pointer' },
+                  input: {
+                    cursor: 'pointer',
+                    ...(indeterminate ? {
+                      background: "var(--mantine-color-gray-4)",
+                      border: "none"
+                    } : {})
+                  }
+                }}
+                icon={({ className }) =>
+                  option.icon ? (
+                    <option.icon className={className} />
+                  ) : (
+                    <IconCheck className={className} />
+                  )
+                }
+                disabled={input.disabled}
+                label={option.label ? option.label : undefined}
+                indeterminate={indeterminate}
+                checked={value[key] === option.value}
+                onChange={() => {
+                  setValue(key, option.value);
+                  const newValue = {
+                    ...value,
+                    [key]: option.value
+                  };
+                  state.onBlur?.(key, option.value, newValue, value, state);
+                }}
+                size={option.icon ? 'lg' : undefined}
+              />
+            )
+          })}
         </Group>
       );
     }

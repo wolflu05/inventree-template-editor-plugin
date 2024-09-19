@@ -1,13 +1,13 @@
 import { t } from '@lingui/macro';
 import { Stack } from '@mantine/core';
 import { IconRectangleFilled } from '@tabler/icons-react';
-import { fabric } from 'fabric';
+import { Rect as FabricRect } from 'fabric';
 
 import { LabelEditorObject } from '.';
 import {
   GeneralSettingBlock,
   buildStyle,
-  createFabricObject,
+  getCustomFabricBaseObject,
   styleHelper
 } from './_BaseObject';
 import {
@@ -17,6 +17,17 @@ import {
   PositionInputGroup,
   SizeInputGroup
 } from './_InputGroups';
+
+class RectangleObject extends getCustomFabricBaseObject(FabricRect) {
+  static type = 'rect';
+
+  constructor(props: any) {
+    super(props);
+
+    this.width = props.width ?? 50;
+    this.height = props.height ?? 50;
+  }
+}
 
 export const Rectangle: LabelEditorObject = {
   key: 'rect',
@@ -47,16 +58,7 @@ export const Rectangle: LabelEditorObject = {
       )
     }
   ],
-  fabricElement: createFabricObject(fabric.Rect, {
-    type: 'rect',
-
-    initialize(props) {
-      this.width = 50;
-      this.height = 50;
-
-      this.callSuper('initialize', props);
-    }
-  }),
+  fabricElement: RectangleObject,
   export: {
     style: (object, id) => {
       return buildStyle(id, [

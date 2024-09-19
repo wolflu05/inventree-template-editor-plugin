@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import { Point as FabricPoint, Rect as FabricRect, FabricObject, util, Canvas as FabricCanvas, TEvent, TPointerEvent } from 'fabric';
 import { FabricJSCanvas, useFabricJSEditor } from '../fabricjs-react';
 import { useCallback, useEffect, useRef } from 'react';
 
@@ -19,8 +19,8 @@ export const EditorArea = () => {
     isDragging: false,
     lastPosX: 0,
     lastPosY: 0,
-    pageElement: null as fabric.Object | null,
-    ignoreObjects: new Set<fabric.Object>()
+    pageElement: null as FabricObject | null,
+    ignoreObjects: new Set<FabricObject>()
   });
 
   const pageWidth = useLabelEditorState((s) => s.pageWidth);
@@ -87,7 +87,7 @@ export const EditorArea = () => {
       height / (pageHeight + 10)
     );
 
-    editor.canvas.zoomToPoint({ x: width / 2, y: height / 2 }, minZoom);
+    editor.canvas.zoomToPoint(new FabricPoint(width / 2, height / 2), minZoom);
   }, [editor]);
 
   useEffect(() => {
@@ -118,7 +118,7 @@ export const EditorArea = () => {
         if (new_zoom > 20) new_zoom = 20;
         if (new_zoom < minZoom) new_zoom = minZoom;
         editor.canvas.zoomToPoint(
-          { x: event.e.offsetX, y: event.e.offsetY },
+          new FabricPoint(event.e.offsetX, event.e.offsetY),
           new_zoom
         );
         event.e.preventDefault();
@@ -127,9 +127,12 @@ export const EditorArea = () => {
       });
 
       on('mouse:down', (event) => {
+        // @ts-expect-error - missing type
         if (event.e.altKey === true || event.e.button === 1) {
           editorState.current.isDragging = true;
+          // @ts-expect-error - missing type
           editorState.current.lastPosX = event.e.clientX;
+          // @ts-expect-error - missing type
           editorState.current.lastPosY = event.e.clientY;
           editor.canvas.selection = false;
         }
@@ -137,9 +140,12 @@ export const EditorArea = () => {
 
       on('mouse:move', (event) => {
         if (editorState.current.isDragging) {
+          // @ts-expect-error - missing type
           handleDrag(event.e.clientX, event.e.clientY);
           editor.canvas.requestRenderAll();
+          // @ts-expect-error - missing type
           editorState.current.lastPosX = event.e.clientX;
+          // @ts-expect-error - missing type
           editorState.current.lastPosY = event.e.clientY;
         }
       });
@@ -154,10 +160,10 @@ export const EditorArea = () => {
       });
 
       on('object:added', (e) => {
-        if (editorState.current.ignoreObjects.has(e.target as fabric.Object))
+        if (editorState.current.ignoreObjects.has(e.target as FabricObject))
           return;
         labelEditorStore.setState((s) => ({
-          objects: [...s.objects, e.target as fabric.Object]
+          objects: [...s.objects, e.target as FabricObject]
         }));
       });
 
@@ -168,7 +174,7 @@ export const EditorArea = () => {
       });
 
       // handle selections
-      const autoSwitchPanel = (e: fabric.IEvent<MouseEvent>) => {
+      const autoSwitchPanel = (e: Partial<TEvent<TPointerEvent>>) => {
         // check if selection was not set by the user
         if (e.e === undefined) return;
         const { setRightPanel, selectedObjects } = labelEditorStore.getState();
@@ -195,14 +201,14 @@ export const EditorArea = () => {
 
       on('selection:created', (e) => {
         labelEditorStore.setState({
-          selectedObjects: e.selected as fabric.Object[]
+          selectedObjects: e.selected as FabricObject[]
         });
         autoSwitchPanel(e);
       });
 
       on('selection:updated', (e) => {
         labelEditorStore.setState({
-          selectedObjects: e.selected as fabric.Object[]
+          selectedObjects: e.selected as FabricObject[]
         });
         autoSwitchPanel(e);
       });
@@ -210,7 +216,7 @@ export const EditorArea = () => {
       // change width and height instead of scaling the object
       on('object:scaling', (e) => {
         const settings = labelEditorStore.getState().pageSettings;
-        const obj = e.target as fabric.Object;
+        const obj = e.target as FabricObject;
         const corner = e.transform?.corner;
 
         if (
@@ -279,7 +285,7 @@ export const EditorArea = () => {
       on('object:moving', (e) => {
         const settings = labelEditorStore.getState().pageSettings;
         if (!settings.snap['grid.enable']) return;
-        const obj = e.target as fabric.Object;
+        const obj = e.target as FabricObject;
         const gridSize = unitToPixel(
           settings.grid['size.size'],
           settings.grid['size.unit']
@@ -301,7 +307,7 @@ export const EditorArea = () => {
       // snap when rotating object
       on('object:rotating', (e) => {
         const snap = labelEditorStore.getState().pageSettings.snap;
-        const obj = e.target as fabric.Object;
+        const obj = e.target as FabricObject;
         if (snap['angle.enable']) {
           obj.snapAngle = e.e.altKey ? 0.1 : snap['angle.value'];
         } else {
@@ -356,7 +362,7 @@ export const EditorArea = () => {
               top: object.top! + direction[1] * gridSize
             });
             object.setCoords();
-            object.canvas?.fire('object:moving', { target: object });
+            object.canvas?.fire('object:moving', { target: object } as any);
           });
           editor?.canvas.renderAll();
         };
@@ -384,7 +390,7 @@ export const EditorArea = () => {
 
     const strokeWidth = 0.2;
 
-    const pageElement = new fabric.Rect({
+    const pageElement = new FabricRect({
       left: -(strokeWidth / 2),
       top: -(strokeWidth / 2),
       width: pageWidth + strokeWidth,
@@ -464,7 +470,7 @@ export const EditorArea = () => {
   }, [editor]);
 
   const customOnReady = useCallback(
-    (canvas: fabric.Canvas) => {
+    async (canvas: FabricCanvas) => {
       // initialize fabricjs canvas
       onReady(canvas);
 
@@ -476,20 +482,16 @@ export const EditorArea = () => {
           o.state = s;
         });
 
-        fabric.util.enlivenObjects(
-          objects,
-          (objects: any) => {
-            objects.forEach((o: fabric.Object) => {
-              canvas.add(o);
-            });
-            labelEditorStore.setState((s) => ({
-              objects: [...s.objects, ...(objects as fabric.Object[])],
-              templateStr: undefined
-            }));
-            canvas.renderAll();
-          },
-          'fabric.Custom'
-        );
+        const fabricObjects = await util.enlivenObjects(objects);
+        fabricObjects.forEach((o) => {
+          canvas.add(o as FabricObject);
+        });
+
+        labelEditorStore.setState((s) => ({
+          objects: [...s.objects, ...(fabricObjects as FabricObject[])],
+          templateStr: undefined
+        }));
+        canvas.renderAll();
       }
     },
     [onReady]

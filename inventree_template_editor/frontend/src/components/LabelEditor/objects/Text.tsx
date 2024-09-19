@@ -6,17 +6,18 @@ import {
   IconAlignBoxRightTop,
   IconTextSize
 } from '@tabler/icons-react';
-import { fabric } from 'fabric';
+import { IText as FabricIText, FabricObject } from 'fabric';
 import { useEffect, useRef, useState } from 'react';
 
 import { LabelEditorObject } from '.';
 import { getFonts } from '../fonts';
 import { InputGroup } from '../panels/Components';
 import {
+  CustomFabricObject,
   GeneralSettingBlock,
   buildStyle,
   c,
-  createFabricObject,
+  getCustomFabricBaseObject,
   styleHelper
 } from './_BaseObject';
 import {
@@ -126,6 +127,38 @@ const TextAlignInputGroup = () => {
   return <InputGroup state={textAlign} />;
 };
 
+class TextObject extends getCustomFabricBaseObject(FabricIText, ['fontSizeUnit']) {
+  static type = 'text';
+
+  fontSize = 20
+  fontSizeUnit = 'mm'
+
+  private tmpWidth = 0;
+  private tmpHeight = 0;
+
+  constructor(text: string, props: any) {
+    super(text, props);
+
+    this.fontSizeUnit = props.state.pageSettings.unit['length.unit'];
+
+    // lock dimensions when editing
+    this.on('editing:entered', () => {
+      this.tmpWidth = this.width;
+      this.tmpHeight = this.height;
+    });
+
+    this.on('editing:exited', () => {
+      this.width = this.tmpWidth;
+      this.height = this.tmpHeight;
+    });
+
+    this.on('changed', () => {
+      this.width = this.tmpWidth;
+      this.height = this.tmpHeight;
+    });
+  }
+}
+
 export const Text: LabelEditorObject = {
   key: 'text',
   name: t`Text`,
@@ -164,39 +197,7 @@ export const Text: LabelEditorObject = {
       )
     }
   ],
-  fabricElement: createFabricObject(
-    fabric.IText as typeof fabric.Object,
-    {
-      type: 'text',
-      fontSize: 20,
-      fontSizeUnit: 'mm',
-
-      initialize(props) {
-        this.fontSizeUnit = props.state.pageSettings.unit['length.unit'];
-        this.width = 50;
-        this.height = 50;
-
-        // lock dimensions when editing
-        this.on('editing:entered', () => {
-          this.tmpWidth = this.width;
-          this.tmpHeight = this.height;
-        });
-
-        this.on('editing:exited', () => {
-          this.width = this.tmpWidth;
-          this.height = this.tmpHeight;
-        });
-
-        this.on('changed', () => {
-          this.width = this.tmpWidth;
-          this.height = this.tmpHeight;
-        });
-
-        this.callSuper('initialize', t`Hello world`, props);
-      }
-    },
-    ['fontSizeUnit']
-  ),
+  fabricElement: TextObject as unknown as CustomFabricObject,
   export: {
     style: (object, id) => {
       return buildStyle(id, [

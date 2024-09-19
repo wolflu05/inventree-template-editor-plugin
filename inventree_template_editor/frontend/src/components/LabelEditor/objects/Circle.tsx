@@ -1,7 +1,7 @@
 import { t } from '@lingui/macro';
 import { Stack } from '@mantine/core';
 import { IconCircleFilled, IconRuler2 } from '@tabler/icons-react';
-import { fabric } from 'fabric';
+import { Circle as FabricCircle } from 'fabric';
 
 import { LabelEditorObject } from '.';
 import { useLabelEditorState } from '../LabelEditorContext';
@@ -9,7 +9,7 @@ import { InputGroup } from '../panels/Components';
 import {
   GeneralSettingBlock,
   buildStyle,
-  createFabricObject,
+  getCustomFabricBaseObject,
   styleHelper
 } from './_BaseObject';
 import {
@@ -43,6 +43,21 @@ const CircleRadiusInputGroup = () => {
   return <InputGroup state={circleRadius} />;
 };
 
+class CircleObject extends getCustomFabricBaseObject(FabricCircle, ['radiusUnit']) {
+  static type = 'circle';
+
+  radiusUnit: string;
+
+  constructor(props: any) {
+    super(props);
+
+    this.width = props.width || 50;
+    this.height = props.height || 50;
+    this.radius = props.radius || 25;
+    this.radiusUnit = props.radiusUnit || 'mm';
+  }
+}
+
 export const Circle: LabelEditorObject = {
   key: 'circle',
   name: t`Circle`,
@@ -71,22 +86,7 @@ export const Circle: LabelEditorObject = {
       )
     }
   ],
-  fabricElement: createFabricObject(
-    fabric.Circle as any,
-    {
-      type: 'circle',
-      radiusUnit: 'mm',
-
-      initialize(props) {
-        this.width = 50;
-        this.height = 50;
-        this.radius = 25;
-
-        this.callSuper('initialize', props);
-      }
-    },
-    ['radiusUnit']
-  ),
+  fabricElement: CircleObject,
   useCanvasEvents: () => {
     const editor = useLabelEditorState((s) => s.editor);
 
@@ -96,7 +96,7 @@ export const Circle: LabelEditorObject = {
         on('object:scaling', (e) => {
           if (e.target?.type !== 'circle') return;
 
-          const obj = e.target as fabric.Circle;
+          const obj = e.target as FabricCircle;
           obj.set({ radius: (obj.width! + obj.height!) / 4 });
         });
       },

@@ -1,10 +1,10 @@
-import { fabric } from 'fabric';
-
+import { classRegistry } from "fabric";
 import { Circle } from './Circle';
 import { QrCode } from './QrCode';
 import { Rectangle } from './Rectangle';
 import { Text } from './Text';
 import { TablerIconType } from "../../../types";
+import { CustomFabricObject } from "./_BaseObject";
 
 export type ObjectPanelBlock = (props: {}) => React.JSX.Element;
 
@@ -19,7 +19,7 @@ export type LabelEditorObject = {
   name: string;
   icon: TablerIconType;
   settingBlocks: SettingBlock[];
-  fabricElement: any;
+  fabricElement: CustomFabricObject;
   useCanvasEvents?: () => void;
   defaultOpen: string[];
   export: {
@@ -38,10 +38,8 @@ export const LabelEditorObjects: LabelEditorObject[] = [
 export const LabelEditorObjectsMap: Record<string, LabelEditorObject> =
   Object.fromEntries(LabelEditorObjects.map((object) => [object.key, object]));
 
-// @ts-ignore
-fabric.Custom = Object.fromEntries(
-  Object.entries(LabelEditorObjectsMap).map(([key, value]) => [
-    key[0].toUpperCase() + key.slice(1),
-    value.fabricElement
-  ])
-);
+// register all objects in fabric class registry
+Object.entries(LabelEditorObjectsMap).forEach(([key, value]) => classRegistry.setClass(
+  value.fabricElement,
+  key,
+));
