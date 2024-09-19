@@ -8,6 +8,7 @@ import { getFonts } from "../fonts";
 import {
   CustomFabricObject,
   GeneralSettingBlock,
+  InitializeProps,
   buildStyle,
   c,
   getCustomFabricBaseObject,
@@ -124,22 +125,32 @@ const TextAlignInputGroup = () => {
 class TextObject extends getCustomFabricBaseObject(FabricIText, ["fontSizeUnit"]) {
   static type = "text";
 
-  fontSize = 20;
-  fontSizeUnit = "mm";
+  fontSize: number;
+  fontSizeUnit: string;
 
   private tmpWidth = 0;
   private tmpHeight = 0;
 
-  constructor(text: string, props: any) {
-    // no text was provided
+  constructor(text: string, props: InitializeProps) {
+    // no text was provided, initial object creation
     if (typeof text === "object") {
       props = text;
+      if ((props as any).width === undefined) (props as any).width = 100;
+      if ((props as any).height === undefined) (props as any).height = 20;
       text = "Hello world";
     }
 
     super(text, props);
 
-    this.fontSizeUnit = props.state.pageSettings.unit["length.unit"];
+    this.fontSize = (props as any).fontSize ?? 20;
+    this.fontSizeUnit = (props as any).fontSizeUnit ?? props.state.pageSettings.unit["length.unit"] ?? "mm";
+
+    // manually set the width and height if they are provided to avoid issues after enliven the object
+    this.width = (props as any).width;
+    this.height = (props as any).height;
+
+    // clear the cache to avoid issues with the text is being rendered below the bounding box
+    this._clearCache();
 
     // lock dimensions when editing
     this.on("editing:entered", () => {

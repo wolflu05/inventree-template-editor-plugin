@@ -8,7 +8,7 @@ import { NameInputGroup } from "./_InputGroups";
 
 import { ObjectPanelBlock, SettingBlock } from ".";
 
-type InitializeProps = {
+export type InitializeProps = {
   left: number;
   top: number;
   state: LabelEditorState;
