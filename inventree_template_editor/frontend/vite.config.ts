@@ -3,12 +3,11 @@ import { resolve, parse } from "path";
 
 import preact from "@preact/preset-vite";
 import { defineConfig } from "vite";
+import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
 // read all pages from src/pages/*
 const basePath = resolve(__dirname, "src/pages/");
-const inputs = Object.fromEntries(
-  readdirSync(basePath).map((f) => [parse(f).name, resolve(basePath, f)])
-);
+const inputs = Object.fromEntries(readdirSync(basePath).map((f) => [parse(f).name, resolve(basePath, f)]));
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -18,6 +17,7 @@ export default defineConfig({
         plugins: ["macros"],
       },
     }),
+    cssInjectedByJsPlugin(),
   ],
   build: {
     manifest: false,

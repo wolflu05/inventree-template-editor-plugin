@@ -1,44 +1,35 @@
-import { t } from '@lingui/macro';
-import { Stack } from '@mantine/core';
-import { IconBoxMargin, IconDimensions, IconQrcode } from '@tabler/icons-react';
-import { FabricObject, util } from 'fabric';
-import QRCodeSVG from 'qrcode-svg';
+import { t } from "@lingui/macro";
+import { Stack } from "@mantine/core";
+import { IconBoxMargin, IconDimensions, IconQrcode } from "@tabler/icons-react";
+import { FabricObject, util } from "fabric";
+import QRCodeSVG from "qrcode-svg";
 
-import { LabelEditorObject } from '.';
-import { PageSettingsType } from '../LabelEditorContext';
-import { InputGroup } from '../panels/Components';
-import { unitToPixel } from '../utils';
-import {
-  GeneralSettingBlock,
-  buildStyle,
-  getCustomFabricBaseObject,
-  styleHelper
-} from './_BaseObject';
-import {
-  AngleInputGroup,
-  ColorInputGroup,
-  PositionInputGroup,
-  useObjectInputGroupState
-} from './_InputGroups';
+import { PageSettingsType } from "../LabelEditorContext";
+import { InputGroup } from "../panels/Components";
+import { unitToPixel } from "../utils";
+import { GeneralSettingBlock, buildStyle, getCustomFabricBaseObject, styleHelper } from "./_BaseObject";
+import { AngleInputGroup, ColorInputGroup, PositionInputGroup, useObjectInputGroupState } from "./_InputGroups";
+
+import { LabelEditorObject } from ".";
 
 const QrSizeInputGroup = () => {
   const size = useObjectInputGroupState({
     name: t`Size`,
     icon: IconDimensions,
-    unitKey: 'size.unit',
-    valueKeys: ['size.value'],
-    connectionUnitKey: 'sizeUnit',
-    connections: [{ objAttr: 'size', inputKey: 'size.value' }],
+    unitKey: "size.unit",
+    valueKeys: ["size.value"],
+    connectionUnitKey: "sizeUnit",
+    connections: [{ objAttr: "size", inputKey: "size.value" }],
     inputRows: [
       {
-        key: 'size',
+        key: "size",
         columns: [
-          { key: 'value', label: t`Size`, type: 'number' },
-          { key: 'unit', template: 'unit' }
-        ]
-      }
+          { key: "value", label: t`Size`, type: "number" },
+          { key: "unit", template: "unit" },
+        ],
+      },
     ],
-    triggerUpdateEvents: ['object:scaling', 'object:added', 'object:modified']
+    triggerUpdateEvents: ["object:scaling", "object:added", "object:modified"],
   });
 
   return <InputGroup state={size} />;
@@ -48,20 +39,20 @@ const QrCodeDataInputGroup = () => {
   const circleRadius = useObjectInputGroupState({
     name: t`QR Data`,
     icon: IconQrcode,
-    connections: [{ objAttr: 'data', inputKey: 'data.value' }],
+    connections: [{ objAttr: "data", inputKey: "data.value" }],
     inputRows: [
       {
-        key: 'data',
+        key: "data",
         columns: [
           {
-            key: 'value',
-            type: 'text',
-            tooltip: t`'qr_data' will be replaced with the qr data for the label item.`
-          }
-        ]
-      }
+            key: "value",
+            type: "text",
+            tooltip: t`'qr_data' will be replaced with the qr data for the label item.`,
+          },
+        ],
+      },
     ],
-    triggerUpdateEvents: ['object:modified']
+    triggerUpdateEvents: ["object:modified"],
   });
 
   return <InputGroup state={circleRadius} />;
@@ -71,29 +62,29 @@ const QrCodeBorderInputGroup = () => {
   const border = useObjectInputGroupState({
     name: t`Border`,
     icon: IconBoxMargin,
-    connections: [{ objAttr: 'border', inputKey: 'border.value' }],
+    connections: [{ objAttr: "border", inputKey: "border.value" }],
     inputRows: [
       {
-        key: 'border',
+        key: "border",
         columns: [
           {
-            key: 'value',
+            key: "value",
             label: t`Border`,
-            type: 'number',
-            tooltip: t`The border around the QR code in blocks`
-          }
-        ]
-      }
+            type: "number",
+            tooltip: t`The border around the QR code in blocks`,
+          },
+        ],
+      },
     ],
-    triggerUpdateEvents: ['object:scaling', 'object:added', 'object:modified']
+    triggerUpdateEvents: ["object:scaling", "object:added", "object:modified"],
   });
 
   return <InputGroup state={border} />;
 };
 
 // inspired by https://medium.com/@andras.tovishati/how-to-create-qr-code-object-type-in-fabric-js-e99b84e8d6c5
-class QrCodeObject extends getCustomFabricBaseObject(FabricObject, ['data', 'border', 'box_size']) {
-  static type = 'qrcode';
+class QrCodeObject extends getCustomFabricBaseObject(FabricObject, ["data", "border", "box_size"]) {
+  static type = "qrcode";
 
   data: string;
   size: number;
@@ -103,16 +94,16 @@ class QrCodeObject extends getCustomFabricBaseObject(FabricObject, ['data', 'bor
   border: number;
   box_size: number;
 
-  private path: any[] = []
+  private path: any[] = [];
 
   constructor(props: any) {
     super(props);
 
-    this.data = props.data ?? 'qr_data';
+    this.data = props.data ?? "qr_data";
     this.size = props.size ?? 40;
     this.strokeWidth = props.strokeWidth ?? 0;
-    this.stroke = props.stroke ?? '#000000';
-    this.fill = props.fill ?? '#ffffff';
+    this.stroke = props.stroke ?? "#000000";
+    this.fill = props.fill ?? "#ffffff";
     this.border = props.border ?? 0;
     this.box_size = props.box_size ?? 20;
     this.width = this.size;
@@ -123,7 +114,7 @@ class QrCodeObject extends getCustomFabricBaseObject(FabricObject, ['data', 'bor
       ml: false,
       mr: false,
       mt: false,
-      mb: false
+      mb: false,
     });
 
     this._createPathData();
@@ -131,9 +122,7 @@ class QrCodeObject extends getCustomFabricBaseObject(FabricObject, ['data', 'bor
 
   // limit scaling so that the qr code is always a multiple of the QR grid size
   getGridSize(settings: PageSettingsType) {
-    const gridSize =
-      unitToPixel(settings.grid['size.size'], settings.grid['size.unit']) *
-      (21 + this.border * 2);
+    const gridSize = unitToPixel(settings.grid["size.size"], settings.grid["size.unit"]) * (21 + this.border * 2);
 
     return gridSize;
   }
@@ -144,14 +133,14 @@ class QrCodeObject extends getCustomFabricBaseObject(FabricObject, ['data', 'bor
       padding: this.border ?? 0,
       width: this.size ?? 40,
       height: this.size ?? 40,
-      color: this.stroke ?? '#000000',
-      background: this.fill ?? '#ffffff',
-      ecl: 'L',
-      join: true
+      color: this.stroke ?? "#000000",
+      background: this.fill ?? "#ffffff",
+      ecl: "L",
+      join: true,
     });
     const svg = qr.svg();
-    const match = svg.match(/<path[^>]*?d=(["\'])?((?:.(?!\1|>))*.?)\1?/);
-    const path = match ? match[2] : '';
+    const match = svg.match(/<path[^>]*?d=(["'])?((?:.(?!\1|>))*.?)\1?/);
+    const path = match ? match[2] : "";
     this.path = util.makePathSimpler(util.parsePath(path));
     this.dirty = true;
     return this;
@@ -160,25 +149,25 @@ class QrCodeObject extends getCustomFabricBaseObject(FabricObject, ['data', 'bor
   _set(key: string, value: any) {
     super._set(key, value);
     switch (key) {
-      case 'data':
-      case 'border':
+      case "data":
+      case "border":
         this._createPathData();
         break;
-      case 'size':
+      case "size":
         if (value <= 0) value = 1;
         this.set({
           width: value,
-          height: value
+          height: value,
         });
         this._createPathData();
         break;
-      case 'width':
+      case "width":
         if (value <= 0) value = 1;
         this.height = value;
         this.size = value;
         this._createPathData();
         break;
-      case 'height':
+      case "height":
         if (value <= 0) value = 1;
         this.size = value;
         this.width = value;
@@ -194,8 +183,8 @@ class QrCodeObject extends getCustomFabricBaseObject(FabricObject, ['data', 'bor
     let current,
       i,
       x = 0,
-      y = 0,
-      w2 = this.width / 2,
+      y = 0;
+    const w2 = this.width / 2,
       h2 = this.height / 2;
     ctx.beginPath();
     for (i = 0; i < this.path.length; i++) {
@@ -203,13 +192,13 @@ class QrCodeObject extends getCustomFabricBaseObject(FabricObject, ['data', 'bor
       x = current[1];
       y = current[2];
       switch (current[0]) {
-        case 'M':
+        case "M":
           ctx.moveTo(x - w2, y - h2);
           break;
-        case 'L':
+        case "L":
           ctx.lineTo(x - w2, y - h2);
           break;
-        case 'Z':
+        case "Z":
           ctx.closePath();
           break;
         default:
@@ -247,43 +236,43 @@ class QrCodeObject extends getCustomFabricBaseObject(FabricObject, ['data', 'bor
 }
 
 export const QrCode: LabelEditorObject = {
-  key: 'qrcode',
-  name: t`QR Code`,
+  key: "qrcode",
+  name: () => t`QR Code`,
   icon: IconQrcode,
-  defaultOpen: ['general', 'layout', 'qr', 'style'],
+  defaultOpen: ["general", "layout", "qr", "style"],
   settingBlocks: [
     GeneralSettingBlock,
     {
-      key: 'layout',
-      name: t`Layout`,
+      key: "layout",
+      name: () => t`Layout`,
       component: () => (
         <Stack>
           <PositionInputGroup />
           <AngleInputGroup />
           <QrSizeInputGroup />
         </Stack>
-      )
+      ),
     },
     {
-      key: 'qr',
-      name: 'QR options',
+      key: "qr",
+      name: () => t`QR options`,
       component: () => (
         <Stack>
           <QrCodeDataInputGroup />
           <QrCodeBorderInputGroup />
         </Stack>
-      )
+      ),
     },
     {
-      key: 'style',
-      name: t`Style`,
+      key: "style",
+      name: () => t`Style`,
       component: () => (
         <Stack>
           <ColorInputGroup name={t`Fill color`} attr="stroke" />
           <ColorInputGroup name={t`Background color`} attr="fill" />
         </Stack>
-      )
-    }
+      ),
+    },
   ],
   fabricElement: QrCodeObject,
   export: {
@@ -291,7 +280,7 @@ export const QrCode: LabelEditorObject = {
       return buildStyle(id, [
         ...styleHelper.position(object),
         ...styleHelper.size(object),
-        ...styleHelper.rotation(object)
+        ...styleHelper.rotation(object),
       ]);
     },
     content: (object, id) => {
@@ -299,13 +288,13 @@ export const QrCode: LabelEditorObject = {
         fill_color: `'${object.stroke}'`,
         back_color: `'${object.fill}'`,
         box_size: object.box_size,
-        border: object.border
+        border: object.border,
       };
       const argsStr = Object.entries(attributes)
         .map(([key, value]) => `${key}=${value}`)
-        .join(' ');
+        .join(" ");
 
       return `<img id="${id}" src='{% qrcode ${object.data} ${argsStr} %}' />`;
-    }
-  }
+    },
+  },
 };

@@ -36,20 +36,14 @@ export type TemplateEditorUIFeature = {
   };
   featureContext: {
     ref: HTMLDivElement;
-    registerHandlers: (handlers: {
-      setCode: (code: string) => void;
-      getCode: () => string;
-    }) => void;
+    registerHandlers: (handlers: { setCode: (code: string) => void; getCode: () => string }) => void;
     template: TemplateI;
   };
   renderReturnType: void;
 };
 
-export type GetFeatureFunctionType =
-  PluginUIGetFeatureType<TemplateEditorUIFeature>;
-export type GetFeatureFunctionParams = Parameters<
-  PluginUIGetFeatureType<BaseUIFeature>
->[0];
+export type GetFeatureFunctionType = PluginUIGetFeatureType<TemplateEditorUIFeature>;
+export type GetFeatureFunctionParams = Parameters<PluginUIGetFeatureType<BaseUIFeature>>[0];
 
 type EditorProps = {
   template: TemplateI;
@@ -58,6 +52,4 @@ type EditorRef = {
   setCode: (code: string) => void | Promise<void>;
   getCode: () => (string | undefined) | Promise<string | undefined>;
 };
-export type EditorComponent = React.ForwardRefExoticComponent<
-  EditorProps & React.RefAttributes<EditorRef>
->;
+export type EditorComponent = React.ForwardRefExoticComponent<EditorProps & React.RefAttributes<EditorRef>>;

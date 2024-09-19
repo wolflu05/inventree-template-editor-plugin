@@ -1,1 +1,1 @@
-export { LabelEditorComponentE } from './LabelEditor';
+export { LabelEditorComponentE } from "./LabelEditor";

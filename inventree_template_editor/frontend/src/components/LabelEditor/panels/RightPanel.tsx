@@ -1,15 +1,5 @@
-import { Trans, t } from '@lingui/macro';
-import {
-  Accordion,
-  Container,
-  Divider,
-  List,
-  Stack,
-  Tabs,
-  Text,
-  Title,
-  Tooltip
-} from '@mantine/core';
+import { Trans, t } from "@lingui/macro";
+import { Accordion, Container, Divider, List, Stack, Tabs, Text, Title, Tooltip } from "@mantine/core";
 import {
   IconAngle,
   IconDimensions,
@@ -21,32 +11,23 @@ import {
   IconResize,
   IconScale,
   IconStack2,
-} from '@tabler/icons-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+} from "@tabler/icons-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-import {
-  PageSettingsType,
-  useLabelEditorState,
-  useLabelEditorStore
-} from '../LabelEditorContext';
-import { LabelEditorObjectsMap } from '../objects';
-import { convertUnit } from '../utils';
-import {
-  InputGroup,
-  UseInputGroupProps,
-  unitInputGroupBlur,
-  useInputGroupState
-} from './Components';
+import { PageSettingsType, useLabelEditorState, useLabelEditorStore } from "../LabelEditorContext";
+import { LabelEditorObjectsMap } from "../objects";
+import { convertUnit } from "../utils";
+import { InputGroup, UseInputGroupProps, unitInputGroupBlur, useInputGroupState } from "./Components";
 import { TablerIconType } from "../../../types";
 import { CustomFabricObject } from "../objects/_BaseObject";
 
-type RightPanelComponent = (props: {}) => React.ReactElement;
+type RightPanelComponent = () => React.ReactElement;
 
-type RightPanelNameComponent = (props: {}) => React.ReactElement;
+type RightPanelNameComponent = () => React.ReactElement;
 
 type RightPanelType = {
   key: string;
-  name: string | RightPanelNameComponent;
+  name: RightPanelNameComponent;
   icon: TablerIconType;
   panel: RightPanelComponent;
   header?: RightPanelComponent;
@@ -59,20 +40,17 @@ type UsePageSettingsInputGroupStateProps<T extends any[]> = {
   pageSettingsKey: keyof PageSettingsType;
 } & UseInputGroupProps<T>;
 
-const usePageSettingsInputGroupState = <T extends any[]>(
-  props: UsePageSettingsInputGroupStateProps<T>
-) => {
+const usePageSettingsInputGroupState = <T extends any[]>(props: UsePageSettingsInputGroupStateProps<T>) => {
   const labelEditorStore = useLabelEditorStore();
 
   const onBlur = useMemo(() => {
     if (props.unitKey) {
       return unitInputGroupBlur({
         unitKey: props.unitKey,
-        valueKeys: props.valueKeys || []
+        valueKeys: props.valueKeys || [],
       });
-    } else {
-      return props.onBlur as any;
     }
+    return props.onBlur as any;
   }, [props.unitKey, props.valueKeys, props.onBlur]);
 
   const inputState = useInputGroupState({
@@ -80,26 +58,20 @@ const usePageSettingsInputGroupState = <T extends any[]>(
     onBlur,
     updateCanvas: (values) => {
       labelEditorStore.setState((s) => ({
-        pageSettings: { ...s.pageSettings, [props.pageSettingsKey]: values }
+        pageSettings: { ...s.pageSettings, [props.pageSettingsKey]: values },
       }));
     },
     updateInputs: (values) => {
       for (const [key, value] of Object.entries(values)) {
         inputState.setValue(key, value);
       }
-    }
+    },
   });
 
   useEffect(() => {
-    inputState.triggerUpdate(
-      labelEditorStore.getState().pageSettings[props.pageSettingsKey]
-    );
+    inputState.triggerUpdate(labelEditorStore.getState().pageSettings[props.pageSettingsKey]);
     return labelEditorStore.subscribe((s, ps) => {
-      if (
-        s.pageSettings[props.pageSettingsKey] ===
-        ps.pageSettings[props.pageSettingsKey]
-      )
-        return;
+      if (s.pageSettings[props.pageSettingsKey] === ps.pageSettings[props.pageSettingsKey]) return;
       inputState.triggerUpdate(s.pageSettings[props.pageSettingsKey]);
     });
   }, []);
@@ -115,138 +87,138 @@ const DocumentRightPanel: RightPanelComponent = () => {
     icon: IconDimensions,
     inputRows: [
       {
-        key: 'dimensions',
+        key: "dimensions",
         columns: [
           {
-            key: 'width',
+            key: "width",
             label: t`Width`,
-            type: 'number',
+            type: "number",
             defaultValue: template?.width,
-            disabled: true
+            disabled: true,
           },
           {
-            key: 'height',
+            key: "height",
             label: t`Height`,
-            type: 'number',
+            type: "number",
             defaultValue: template?.height,
-            disabled: true
+            disabled: true,
           },
-          { key: 'unit', template: 'unit', disabled: true }
-        ]
-      }
-    ]
+          { key: "unit", template: "unit", disabled: true },
+        ],
+      },
+    ],
   });
 
   const unit = usePageSettingsInputGroupState({
     name: t`Default units`,
     icon: IconScale,
-    pageSettingsKey: 'unit',
+    pageSettingsKey: "unit",
     inputRows: [
       {
-        key: 'length',
+        key: "length",
         columns: [
           {
-            key: 'unit',
+            key: "unit",
             label: t`Length`,
-            template: 'unit'
-          }
-        ]
-      }
-    ]
+            template: "unit",
+          },
+        ],
+      },
+    ],
   });
 
   const grid = usePageSettingsInputGroupState({
     name: t`Grid`,
     icon: IconGrid4x4,
     onBlur: (key, value, values, oldState, state) => {
-      if (key === 'size.size') {
-        const v = 1 / convertUnit(value, values['size.unit'], 'in');
-        state.setValue('dpi.value', v);
-        values['dpi.value'] = v;
+      if (key === "size.size") {
+        const v = 1 / convertUnit(value, values["size.unit"], "in");
+        state.setValue("dpi.value", v);
+        values["dpi.value"] = v;
       }
 
-      if (key === 'dpi.value') {
-        const v = convertUnit(1 / value, 'in', values['size.unit']);
-        state.setValue('size.size', v);
-        values['size.size'] = v;
+      if (key === "dpi.value") {
+        const v = convertUnit(1 / value, "in", values["size.unit"]);
+        state.setValue("size.size", v);
+        values["size.size"] = v;
       }
 
       unitInputGroupBlur({
-        unitKey: 'size.unit',
-        valueKeys: ['size.size']
+        unitKey: "size.unit",
+        valueKeys: ["size.size"],
       })(key, value, values, oldState, state);
     },
-    pageSettingsKey: 'grid',
+    pageSettingsKey: "grid",
     inputRows: [
       {
-        key: 'size',
+        key: "size",
         columns: [
-          { key: 'size', label: t`Size`, type: 'number' },
-          { key: 'unit', template: 'unit' }
-        ]
+          { key: "size", label: t`Size`, type: "number" },
+          { key: "unit", template: "unit" },
+        ],
       },
       {
-        key: 'dpi',
+        key: "dpi",
         columns: [
           {
-            key: 'value',
+            key: "value",
             label: t`DPI`,
-            type: 'number'
-          }
-        ]
-      }
-    ]
+            type: "number",
+          },
+        ],
+      },
+    ],
   });
 
   const snap = usePageSettingsInputGroupState({
     name: t`Snapping`,
     icon: IconMagnet,
-    pageSettingsKey: 'snap',
+    pageSettingsKey: "snap",
     inputRows: [
       {
-        key: 'grid',
+        key: "grid",
         columns: [
           {
-            key: 'enable',
+            key: "enable",
             label: t`Grid snap`,
-            type: 'checkbox',
-            icon: IconGrid4x4
-          }
-        ]
+            type: "checkbox",
+            icon: IconGrid4x4,
+          },
+        ],
       },
       {
-        key: 'angle',
+        key: "angle",
         columns: [
           {
-            key: 'enable',
-            type: 'checkbox',
+            key: "enable",
+            type: "checkbox",
             icon: IconAngle,
-            tooltip: t`Alt key to modify`
+            tooltip: t`Alt key to modify`,
           },
-          { key: 'value', label: t`Angle [°]`, type: 'number' }
-        ]
-      }
-    ]
+          { key: "value", label: t`Angle [°]`, type: "number" },
+        ],
+      },
+    ],
   });
 
   const scale = usePageSettingsInputGroupState({
     name: t`Scale`,
     icon: IconResize,
-    pageSettingsKey: 'scale',
+    pageSettingsKey: "scale",
     inputRows: [
       {
-        key: 'uniform',
+        key: "uniform",
         columns: [
           {
-            key: 'enable',
+            key: "enable",
             label: t`Uniform scaling`,
-            type: 'checkbox',
+            type: "checkbox",
             icon: IconLock,
-            tooltip: t`Alt key to modify`
-          }
-        ]
-      }
-    ]
+            tooltip: t`Alt key to modify`,
+          },
+        ],
+      },
+    ],
   });
 
   return (
@@ -266,7 +238,7 @@ const ObjectsRightPanel: RightPanelComponent = () => {
   const selectedObjects = useLabelEditorState((s) => s.selectedObjects);
   const selectedObjectsList = useMemo(
     () => selectedObjects.flatMap((o) => [o, ...(o.group?._objects || [])]),
-    [selectedObjects]
+    [selectedObjects],
   );
 
   const stackRef = useRef<HTMLDivElement>(null);
@@ -274,7 +246,7 @@ const ObjectsRightPanel: RightPanelComponent = () => {
   return (
     <Stack
       p={10}
-      style={{ flex: 1, height: '100%' }}
+      style={{ flex: 1, height: "100%" }}
       onClick={(e) => {
         if (e.target === stackRef.current) {
           editor?.canvas.discardActiveObject();
@@ -292,8 +264,8 @@ const ObjectsRightPanel: RightPanelComponent = () => {
                 editor?.canvas.renderAll();
               }}
               style={{
-                cursor: 'pointer',
-                fontWeight: selectedObjectsList.includes(object) ? 600 : 400
+                cursor: "pointer",
+                fontWeight: selectedObjectsList.includes(object) ? 600 : 400,
               }}
             >
               {(object as unknown as CustomFabricObject).name}
@@ -318,7 +290,7 @@ const ObjectOptionsRightPanelName: RightPanelNameComponent = () => {
     return <Trans>Object options</Trans>;
   }
 
-  if (selectedObjects.length > 1 || 'group' in (selectedObjects[0] || {})) {
+  if (selectedObjects.length > 1 || "group" in (selectedObjects[0] || {})) {
     return <Trans>Object options</Trans>;
   }
 
@@ -327,7 +299,7 @@ const ObjectOptionsRightPanelName: RightPanelNameComponent = () => {
 
   return (
     <>
-      {component.name} <Trans>options</Trans>
+      {component.name()} <Trans>options</Trans>
     </>
   );
 };
@@ -338,7 +310,7 @@ const ObjectOptionsRightPanel: RightPanelComponent = () => {
 
   const component = useMemo(() => {
     if (selectedObjects?.length !== 1) return null;
-    if ('group' in selectedObjects[0]) return null;
+    if ("group" in selectedObjects[0]) return null;
 
     const object = selectedObjects[0];
     return LabelEditorObjectsMap[object.type as string];
@@ -357,10 +329,8 @@ const ObjectOptionsRightPanel: RightPanelComponent = () => {
     error = <Trans>No objects selected</Trans>;
   }
 
-  if (selectedObjects.length > 1 || 'group' in (selectedObjects[0] || {})) {
-    error = (
-      <Trans>Multiple objects selected, which is not supported currently</Trans>
-    );
+  if (selectedObjects.length > 1 || "group" in (selectedObjects[0] || {})) {
+    error = <Trans>Multiple objects selected, which is not supported currently</Trans>;
   }
 
   if (error || component === null) {
@@ -378,24 +348,24 @@ const ObjectOptionsRightPanel: RightPanelComponent = () => {
         onChange={setActivePanels}
         styles={{
           control: {
-            paddingLeft: 10
+            paddingLeft: 10,
           },
           label: {
-            paddingTop: '8px',
-            paddingBottom: '8px',
+            paddingTop: "8px",
+            paddingBottom: "8px",
             fontWeight: 600,
-            fontSize: 18
+            fontSize: 18,
           },
           content: {
             paddingLeft: 10,
-            paddingRight: 10
-          }
+            paddingRight: 10,
+          },
         }}
         multiple
       >
         {component.settingBlocks.map((block) => (
           <Accordion.Item key={block.key} value={block.key}>
-            <Accordion.Control>{block.name}</Accordion.Control>
+            <Accordion.Control>{block.name()}</Accordion.Control>
             <Accordion.Panel pb={10}>
               <block.component />
             </Accordion.Panel>
@@ -408,31 +378,29 @@ const ObjectOptionsRightPanel: RightPanelComponent = () => {
 
 const panels: RightPanelType[] = [
   {
-    key: 'document',
-    name: t`Document`,
+    key: "document",
+    name: () => <Trans>Document</Trans>,
     icon: IconFileBarcode,
-    panel: DocumentRightPanel
+    panel: DocumentRightPanel,
   },
   {
-    key: 'objects',
-    name: t`Objects`,
+    key: "objects",
+    name: () => <Trans>Objects</Trans>,
     icon: IconStack2,
-    panel: ObjectsRightPanel
+    panel: ObjectsRightPanel,
   },
   {
-    key: 'object-options',
+    key: "object-options",
     name: ObjectOptionsRightPanelName,
     icon: IconLayoutCards,
     panel: ObjectOptionsRightPanel,
     requiresSelection: true,
-  }
+  },
 ];
-export type RightPanelKeyType = 'document' | 'objects' | 'object-options';
+export type RightPanelKeyType = "document" | "objects" | "object-options";
 
 export function RightPanel() {
-  const [activePanel, setActivePanel] = useState<RightPanelKeyType>(
-    panels[0].key as RightPanelKeyType
-  );
+  const [activePanel, setActivePanel] = useState<RightPanelKeyType>(panels[0].key as RightPanelKeyType);
   const labelEditorStore = useLabelEditorStore();
   const selectedObjects = useLabelEditorState((s) => s.selectedObjects.length);
 
@@ -441,73 +409,71 @@ export function RightPanel() {
   }, [setActivePanel]);
 
   return (
-    <div style={{ width: '300px', minWidth: '300px', display: 'flex' }}>
+    <div style={{ width: "300px", minWidth: "300px", display: "flex" }}>
       <Tabs
         orientation="vertical"
         value={activePanel}
         onChange={setActivePanel as (panel: string | null) => void}
         placement="right"
-        style={{ flex: 1, display: 'flex' }}
+        style={{ flex: 1, display: "flex" }}
       >
         <Tabs.List>
-          {panels.filter(panel => panel.requiresSelection ? selectedObjects > 0 : true).map((panel) => (
-            <Tooltip
-              label={
-                typeof panel.name === 'function' ? <panel.name /> : panel.name
-              }
-              key={panel.key}
-              position="left"
-            >
-              <Tabs.Tab
-                key={panel.key}
-                value={panel.key}
-                leftSection={<panel.icon size="1.25rem" style={{ margin: '-4px' }} />}
-                bg={panel.requiresSelection ? 'var(--mantine-color-blue-0)' : undefined}
-              />
-            </Tooltip>
-          ))}
+          {panels
+            .filter((panel) => (panel.requiresSelection ? selectedObjects > 0 : true))
+            .map((panel) => (
+              <Tooltip label={<panel.name />} key={panel.key} position="left">
+                <Tabs.Tab
+                  key={panel.key}
+                  value={panel.key}
+                  leftSection={<panel.icon size="1.25rem" style={{ margin: "-4px" }} />}
+                  bg={panel.requiresSelection ? "var(--mantine-color-blue-0)" : undefined}
+                />
+              </Tooltip>
+            ))}
         </Tabs.List>
 
-        {panels.filter(panel => panel.requiresSelection ? selectedObjects > 0 : true).map((panel) => (
-          <Tabs.Panel
-            key={panel.key}
-            value={panel.key}
-            style={
-              activePanel === panel.key
-                ? {
-                  display: 'flex',
-                  flex: '1',
-                  flexDirection: 'column',
-                  width: '100%',
-                  height: '100%'
-                }
-                : {}
-            }
-          >
-            <Title order={3} pl={10} pt={7}>
-              {typeof panel.name === 'function' ? <panel.name /> : panel.name}
-            </Title>
-            <Divider mt={2} />
-            <div
-              style={{
-                position: 'relative',
-                width: '100%',
-                height: '100%'
-              }}
+        {panels
+          .filter((panel) => (panel.requiresSelection ? selectedObjects > 0 : true))
+          .map((panel) => (
+            <Tabs.Panel
+              key={panel.key}
+              value={panel.key}
+              style={
+                activePanel === panel.key
+                  ? {
+                      display: "flex",
+                      flex: "1",
+                      flexDirection: "column",
+                      width: "100%",
+                      height: "100%",
+                    }
+                  : {}
+              }
             >
+              <Title order={3} pl={10} pt={7}>
+                {typeof panel.name === "function" ? <panel.name /> : panel.name}
+              </Title>
+              <Divider mt={2} />
               <div
                 style={{
-                  position: 'absolute',
-                  overflowY: 'auto',
-                  height: '100%',
-                  width: '100%'
+                  position: "relative",
+                  width: "100%",
+                  height: "100%",
                 }}
               >
-                <panel.panel />
+                <div
+                  style={{
+                    position: "absolute",
+                    overflowY: "auto",
+                    height: "100%",
+                    width: "100%",
+                  }}
+                >
+                  <panel.panel />
+                </div>
               </div>
-            </div>
-          </Tabs.Panel>
-        ))}
+            </Tabs.Panel>
+          ))}
       </Tabs>
     </div>
   );

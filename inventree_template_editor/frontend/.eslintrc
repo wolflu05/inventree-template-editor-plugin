@@ -1,0 +1,89 @@
+{
+    "extends": [
+        "eslint:recommended",
+        "preact",
+        "plugin:react-hooks/recommended",
+        "plugin:import/recommended",
+        "plugin:jsx-a11y/recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:prettier/recommended"
+    ],
+    "plugins": [
+        "prettier",
+        "lingui"
+    ],
+    "settings": {
+        "import/resolver": {
+            "typescript": {}
+        }
+    },
+    "rules": {
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": "error",
+        "@typescript-eslint/no-explicit-any": "off",
+        "react/react-in-jsx-scope": "off",
+        "react/jsx-key": "off",
+        "react/self-closing-comp": "off",
+        "import/named": "off",
+        "import/no-unresolved": "error",
+        "import/no-named-as-default": "off",
+        "jsx-a11y/no-noninteractive-element-to-interactive-role": "off",
+        "jsx-a11y/click-events-have-key-events": "off",
+        "react-hooks/exhaustive-deps": "off",
+        "import/order": [
+            "error",
+            {
+                "groups": [
+                    "builtin",
+                    "external",
+                    "internal",
+                    [
+                        "sibling",
+                        "parent"
+                    ],
+                    "index",
+                    "unknown"
+                ],
+                "pathGroups": [
+                    {
+                        "pattern": "{preact,preact/*}",
+                        "group": "external",
+                        "position": "before"
+                    },
+                    {
+                        "pattern": "**/*.+(css|sass|less|scss|pcss|styl)",
+                        "patternOptions": {
+                            "dot": true,
+                            "nocomment": true
+                        },
+                        "group": "unknown",
+                        "position": "after"
+                    },
+                    {
+                        "pattern": "{.,..}/**/*.+(css|sass|less|scss|pcss|styl)",
+                        "patternOptions": {
+                            "dot": true,
+                            "nocomment": true
+                        },
+                        "group": "unknown",
+                        "position": "after"
+                    }
+                ],
+                "warnOnUnassignedImports": true,
+                "distinctGroup": true,
+                "pathGroupsExcludedImportTypes": [],
+                "newlines-between": "always",
+                "alphabetize": {
+                    "order": "asc",
+                    "caseInsensitive": true
+                }
+            }
+        ],
+        "lingui/no-unlocalized-strings": 0,
+        "lingui/t-call-in-function": 2,
+        "lingui/no-single-variables-to-translate": 2,
+        "lingui/no-expression-in-message": 2,
+        "lingui/no-single-tag-to-translate": 2,
+        "lingui/no-trans-inside-trans": 2
+    }
+}

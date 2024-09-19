@@ -1,4 +1,4 @@
-import { t } from '@lingui/macro';
+import { t } from "@lingui/macro";
 import {
   Checkbox,
   ColorInput,
@@ -9,28 +9,26 @@ import {
   Switch,
   TextInput,
   Title,
-  Tooltip
-} from '@mantine/core';
-import { IconCheck } from '@tabler/icons-react';
-import { useCallback, useState } from 'react';
+  Tooltip,
+} from "@mantine/core";
+import { IconCheck } from "@tabler/icons-react";
+import { useCallback, useState } from "react";
 
-import { PageSettingsType, useLabelEditorStore } from '../LabelEditorContext';
-import { convertUnit, units } from '../utils';
 import { TablerIconType } from "../../../types";
+import { PageSettingsType, useLabelEditorStore } from "../LabelEditorContext";
+import { convertUnit, units } from "../utils";
 
-const getInputTemplates = (
-  pageSettings: PageSettingsType
-): Record<string, InputGroupInputProps> => ({
+const getInputTemplates = (pageSettings: PageSettingsType): Record<string, InputGroupInputProps> => ({
   unit: {
-    key: '',
+    key: "",
     label: t`Unit`,
-    type: 'select',
-    defaultValue: pageSettings.unit['length.unit'],
+    type: "select",
+    defaultValue: pageSettings.unit["length.unit"],
     selectOptions: Object.entries(units).map(([key, value]) => ({
       value: key,
-      label: value.name
-    }))
-  }
+      label: value.name,
+    })),
+  },
 });
 
 type InputGroupInputProps = {
@@ -38,14 +36,7 @@ type InputGroupInputProps = {
   disabled?: boolean;
 } & {
   label?: string;
-  type?:
-  | 'number'
-  | 'switch'
-  | 'checkbox'
-  | 'select'
-  | 'text'
-  | 'color'
-  | 'radio';
+  type?: "number" | "switch" | "checkbox" | "select" | "text" | "color" | "radio";
   icon?: TablerIconType;
   tooltip?: string;
   defaultValue?: number | boolean | string;
@@ -55,7 +46,7 @@ type InputGroupInputProps = {
     label?: string;
     icon?: TablerIconType;
   }[];
-  template?: 'unit';
+  template?: "unit";
 };
 
 type InputGroupRow = {
@@ -76,7 +67,7 @@ export type UseInputGroupProps<T extends any[]> = {
     value: any,
     allValues: Record<string, any>,
     oldState: Record<string, any>,
-    state: UseInputGroupStateReturnType<T>
+    state: UseInputGroupStateReturnType<T>,
   ) => void;
   updateCanvas?: (values: Record<string, any>) => void;
   updateInputs?: (...args: T) => void;
@@ -88,9 +79,7 @@ type UseInputGroupStateReturnType<T extends any[]> = UseInputGroupProps<T> & {
   triggerUpdate: (...args: T) => void;
 };
 
-export const useInputGroupState = <T extends any[]>(
-  props: UseInputGroupProps<T>
-): UseInputGroupStateReturnType<T> => {
+export const useInputGroupState = <T extends any[]>(props: UseInputGroupProps<T>): UseInputGroupStateReturnType<T> => {
   const { inputRows, onChange } = props;
   const labelEditorStore = useLabelEditorStore();
 
@@ -101,10 +90,8 @@ export const useInputGroupState = <T extends any[]>(
         let input = _input;
         if (input.template) {
           input = {
-            ...getInputTemplates(labelEditorStore.getState().pageSettings)[
-            input.template
-            ],
-            ..._input
+            ...getInputTemplates(labelEditorStore.getState().pageSettings)[input.template],
+            ..._input,
           };
         }
         _state[`${row.key}.${input.key}`] = input.defaultValue;
@@ -123,31 +110,32 @@ export const useInputGroupState = <T extends any[]>(
         return newState;
       });
     },
-    [onChange]
+    [onChange],
   );
 
+  const { onBlur: _onBlur, updateCanvas: _updateCanvas, updateInputs: _updateInputs } = props;
   const onBlur = useCallback(
     (
       key: string,
       value: any,
       allValues: Record<string, any>,
       oldState: Record<string, any>,
-      state: UseInputGroupStateReturnType<T>
+      state: UseInputGroupStateReturnType<T>,
     ) => {
-      if (props.onBlur) {
-        props.onBlur(key, value, allValues, oldState, state);
+      if (_onBlur) {
+        _onBlur(key, value, allValues, oldState, state);
       } else {
-        props.updateCanvas?.(allValues);
+        _updateCanvas?.(allValues);
       }
     },
-    [props.onBlur, props.updateCanvas]
+    [_onBlur, _updateCanvas],
   );
 
   const triggerUpdate = useCallback(
     (...args: T) => {
-      props.updateInputs?.(...args);
+      _updateInputs?.(...args);
     },
-    [props.updateInputs]
+    [_updateInputs],
   );
 
   return {
@@ -155,21 +143,17 @@ export const useInputGroupState = <T extends any[]>(
     value: state,
     setValue,
     onBlur,
-    triggerUpdate
+    triggerUpdate,
   };
 };
 
-export const InputGroup = <T extends any[]>({
-  state
-}: {
-  state: UseInputGroupStateReturnType<T>;
-}) => {
+export const InputGroup = <T extends any[]>({ state }: { state: UseInputGroupStateReturnType<T> }) => {
   const { name, icon: Icon, inputRows, value, setValue: _setValue } = state;
   const setValue = useCallback(
     (key: string, value: any) => {
       _setValue(key, value, true);
     },
-    [_setValue]
+    [_setValue],
   );
 
   const ChildInput = (rowKey: string, _input: InputGroupInputProps) => {
@@ -178,15 +162,13 @@ export const InputGroup = <T extends any[]>({
     let input = _input;
     if (input.template) {
       input = {
-        ...getInputTemplates(labelEditorStore.getState().pageSettings)[
-        input.template
-        ],
-        ..._input
+        ...getInputTemplates(labelEditorStore.getState().pageSettings)[input.template],
+        ..._input,
       };
     }
     const key = `${rowKey}.${input.key}`;
 
-    if (input.type === 'text') {
+    if (input.type === "text") {
       return (
         <TextInput
           size="xs"
@@ -199,7 +181,7 @@ export const InputGroup = <T extends any[]>({
       );
     }
 
-    if (input.type === 'number') {
+    if (input.type === "number") {
       return (
         <NumberInput
           size="xs"
@@ -212,13 +194,13 @@ export const InputGroup = <T extends any[]>({
           stepHoldDelay={500}
           stepHoldInterval={100}
           rightSectionProps={{
-            onClick: () => state.onBlur?.(key, value[key], value, value, state)
+            onClick: () => state.onBlur?.(key, value[key], value, value, state),
           }}
         />
       );
     }
 
-    if (input.type === 'switch') {
+    if (input.type === "switch") {
       return (
         <Switch
           label={input.label}
@@ -229,36 +211,26 @@ export const InputGroup = <T extends any[]>({
             setValue(key, e.currentTarget.checked);
             const newValue = {
               ...value,
-              [key]: e.currentTarget.checked
+              [key]: e.currentTarget.checked,
             };
-            state.onBlur?.(
-              key,
-              e.currentTarget.checked,
-              newValue,
-              value,
-              state
-            );
+            state.onBlur?.(key, e.currentTarget.checked, newValue, value, state);
           }}
         />
       );
     }
 
-    if (input.type === 'checkbox') {
+    if (input.type === "checkbox") {
       return (
         <Checkbox
           mt={10}
           mr={8}
-          style={{ alignSelf: 'flex-end' }}
+          style={{ alignSelf: "flex-end" }}
           styles={{
-            label: { fontSize: '0.875rem', cursor: 'pointer' },
-            input: { cursor: 'pointer' }
+            label: { fontSize: "0.875rem", cursor: "pointer" },
+            input: { cursor: "pointer" },
           }}
           icon={({ className }) =>
-            input.icon ? (
-              <input.icon className={className} />
-            ) : (
-              <IconCheck className={className} />
-            )
+            input.icon ? <input.icon className={className} /> : <IconCheck className={className} />
           }
           disabled={input.disabled}
           label={input.label ? input.label : undefined}
@@ -268,22 +240,16 @@ export const InputGroup = <T extends any[]>({
             setValue(key, e.currentTarget.checked);
             const newValue = {
               ...value,
-              [key]: e.currentTarget.checked
+              [key]: e.currentTarget.checked,
             };
-            state.onBlur?.(
-              key,
-              e.currentTarget.checked,
-              newValue,
-              value,
-              state
-            );
+            state.onBlur?.(key, e.currentTarget.checked, newValue, value, state);
           }}
-          size={input.icon ? 'lg' : undefined}
+          size={input.icon ? "lg" : undefined}
         />
       );
     }
 
-    if (input.type === 'select') {
+    if (input.type === "select") {
       return (
         <Select
           label={input.label}
@@ -294,7 +260,7 @@ export const InputGroup = <T extends any[]>({
             withinPortal: false,
           }}
           size="xs"
-          style={{ width: '150px' }}
+          style={{ width: "150px" }}
           value={value[key]}
           onChange={(v) => {
             setValue(key, v);
@@ -304,7 +270,7 @@ export const InputGroup = <T extends any[]>({
       );
     }
 
-    if (input.type === 'color') {
+    if (input.type === "color") {
       return (
         <ColorInput
           label={input.label}
@@ -317,28 +283,28 @@ export const InputGroup = <T extends any[]>({
             state?.onBlur?.(key, v, { ...value, [key]: v }, value, state);
           }}
           swatches={[
-            'rgba(0,0,0,0)',
-            '#25262b',
-            '#868e96',
-            '#fa5252',
-            '#e64980',
-            '#be4bdb',
-            '#7950f2',
-            '#4c6ef5',
-            '#228be6',
-            '#15aabf',
-            '#12b886',
-            '#40c057',
-            '#82c91e',
-            '#fab005',
-            '#fd7e14'
+            "rgba(0,0,0,0)",
+            "#25262b",
+            "#868e96",
+            "#fa5252",
+            "#e64980",
+            "#be4bdb",
+            "#7950f2",
+            "#4c6ef5",
+            "#228be6",
+            "#15aabf",
+            "#12b886",
+            "#40c057",
+            "#82c91e",
+            "#fab005",
+            "#fd7e14",
           ]}
           format="rgba"
         />
       );
     }
 
-    if (input.type === 'radio') {
+    if (input.type === "radio") {
       return (
         <Group wrap="nowrap">
           {input.radioOptions?.map((option, idx) => {
@@ -350,23 +316,21 @@ export const InputGroup = <T extends any[]>({
                 key={idx}
                 mt={10}
                 mr={8}
-                style={{ alignSelf: 'flex-end' }}
+                style={{ alignSelf: "flex-end" }}
                 styles={{
-                  label: { fontSize: '0.875rem', cursor: 'pointer' },
+                  label: { fontSize: "0.875rem", cursor: "pointer" },
                   input: {
-                    cursor: 'pointer',
-                    ...(indeterminate ? {
-                      background: "var(--mantine-color-gray-4)",
-                      border: "none"
-                    } : {})
-                  }
+                    cursor: "pointer",
+                    ...(indeterminate
+                      ? {
+                          background: "var(--mantine-color-gray-4)",
+                          border: "none",
+                        }
+                      : {}),
+                  },
                 }}
                 icon={({ className }) =>
-                  option.icon ? (
-                    <option.icon className={className} />
-                  ) : (
-                    <IconCheck className={className} />
-                  )
+                  option.icon ? <option.icon className={className} /> : <IconCheck className={className} />
                 }
                 disabled={input.disabled}
                 label={option.label ? option.label : undefined}
@@ -376,13 +340,13 @@ export const InputGroup = <T extends any[]>({
                   setValue(key, option.value);
                   const newValue = {
                     ...value,
-                    [key]: option.value
+                    [key]: option.value,
                   };
                   state.onBlur?.(key, option.value, newValue, value, state);
                 }}
-                size={option.icon ? 'lg' : undefined}
+                size={option.icon ? "lg" : undefined}
               />
-            )
+            );
           })}
         </Group>
       );
@@ -393,23 +357,23 @@ export const InputGroup = <T extends any[]>({
     <Stack style={{ gap: 0 }}>
       <Group wrap="nowrap">
         <Icon size="1.25rem" />
-        <Title order={5} ml={'-10px'} fw={500}>
+        <Title order={5} ml={"-10px"} fw={500}>
           {name}
         </Title>
       </Group>
       {inputRows.map((row, rowIdx) => (
-        <Group key={rowIdx} wrap="nowrap" style={{ gap: '4px' }}>
+        <Group key={rowIdx} wrap="nowrap" style={{ gap: "4px" }}>
           {row.columns.map((input, idx) => (
             <Tooltip
               label={input.tooltip}
               events={{
                 hover: !!input.tooltip,
                 focus: !!input.tooltip,
-                touch: !!input.tooltip
+                touch: !!input.tooltip,
               }}
               style={{
-                cursor: 'pointer',
-                textWrap: 'wrap'
+                cursor: "pointer",
+                textWrap: "wrap",
               }}
               maw={200}
               key={idx}
@@ -423,30 +387,14 @@ export const InputGroup = <T extends any[]>({
   );
 };
 
-export const unitInputGroupBlur = ({
-  unitKey,
-  valueKeys
-}: {
-  unitKey: string;
-  valueKeys: string[];
-}) => {
-  return (
-    key: string,
-    _value: any,
-    _values: Record<string, any>,
-    oldState: Record<string, any>,
-    state: any
-  ) => {
-    let values = { ..._values };
+export const unitInputGroupBlur = ({ unitKey, valueKeys }: { unitKey: string; valueKeys: string[] }) => {
+  return (key: string, _value: any, _values: Record<string, any>, oldState: Record<string, any>, state: any) => {
+    const values = { ..._values };
 
     // Convert all values to the new unit if unit has changed
     if (key === unitKey) {
       for (const unitValue of valueKeys) {
-        values[unitValue] = convertUnit(
-          values[unitValue],
-          oldState[unitKey],
-          values[unitKey]
-        );
+        values[unitValue] = convertUnit(values[unitValue], oldState[unitKey], values[unitKey]);
         state.setValue(unitValue, values[unitValue]);
       }
     }

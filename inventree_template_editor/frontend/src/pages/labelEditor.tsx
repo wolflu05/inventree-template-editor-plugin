@@ -1,11 +1,14 @@
-import { render as preact_render } from 'preact'
-import { LabelEditorComponentE } from "../components/LabelEditor";
-import { Base } from "../components/Base";
+import { render as preact_render } from "preact";
 import { useEffect, useRef } from "preact/hooks";
+
+import { Base } from "../components/Base";
+import { LabelEditorComponentE } from "../components/LabelEditor";
 import { GetAndSetCodeHandlers, GetFeatureFunctionParams, GetFeatureFunctionType } from "../types/InvenTree";
 
 const App = ({ params }: { params: GetFeatureFunctionParams }) => {
-  const { featureContext: { template, registerHandlers } } = params;
+  const {
+    featureContext: { template, registerHandlers },
+  } = params;
   const editorRef = useRef<GetAndSetCodeHandlers>();
   const hasRegisteredRef = useRef(false);
 
@@ -16,7 +19,7 @@ const App = ({ params }: { params: GetFeatureFunctionParams }) => {
       setCode: (code: string) => {
         editorRef.current!.setCode(code);
       },
-      getCode: () => editorRef.current!.getCode()
+      getCode: () => editorRef.current!.getCode(),
     });
     hasRegisteredRef.current = true;
   }, [editorRef.current]);
@@ -25,9 +28,9 @@ const App = ({ params }: { params: GetFeatureFunctionParams }) => {
     <Base params={params}>
       <LabelEditorComponentE template={template} ref={editorRef as any} />
     </Base>
-  )
-}
+  );
+};
 
 export const getFeature: GetFeatureFunctionType = (params) => {
   preact_render(<App params={params} />, params.featureContext.ref);
-}
+};

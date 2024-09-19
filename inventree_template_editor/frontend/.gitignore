@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+src/locales/**/messages.ts
+src/locales/**/messages.po

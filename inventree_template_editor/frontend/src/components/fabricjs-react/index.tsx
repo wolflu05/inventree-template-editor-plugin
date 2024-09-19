@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas } from "fabric";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export interface Props {
   className?: string;
@@ -34,6 +34,7 @@ export const FabricJSCanvas = ({ className, onReady }: Props) => {
       canvas.dispose();
       window.removeEventListener("resize", resizeCanvas);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -46,24 +47,21 @@ export const FabricJSCanvas = ({ className, onReady }: Props) => {
 export const useFabricJSEditor = (): FabricJSEditorHook => {
   const [canvas, setCanvas] = useState<null | Canvas>(null);
 
-  const editor = useMemo(
-    () => canvas ? { canvas } : undefined,
-    [canvas]
-  );
+  const editor = useMemo(() => (canvas ? { canvas } : undefined), [canvas]);
 
   return {
     onReady: (canvasReady: Canvas): void => {
-      setCanvas(canvasReady)
+      setCanvas(canvasReady);
     },
-    editor
-  }
-}
+    editor,
+  };
+};
 
 export interface FabricJSEditor {
-  canvas: Canvas
+  canvas: Canvas;
 }
 
 export interface FabricJSEditorHook {
   editor?: FabricJSEditor;
-  onReady: (canvas: Canvas) => void
+  onReady: (canvas: Canvas) => void;
 }

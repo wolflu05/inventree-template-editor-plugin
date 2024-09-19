@@ -1,10 +1,10 @@
-import { t } from '@lingui/macro';
-import { ActionIcon, Group, Stack, Text, Tooltip } from '@mantine/core';
-import { IconArrowAutofitWidth } from '@tabler/icons-react';
-import { useState } from 'react';
+import { t } from "@lingui/macro";
+import { ActionIcon, Group, Stack, Text, Tooltip } from "@mantine/core";
+import { IconArrowAutofitWidth } from "@tabler/icons-react";
+import { useState } from "react";
 
-import { useLabelEditorState } from '../LabelEditorContext';
 import { useEvents } from "../../../hooks/useEvents";
+import { useLabelEditorState } from "../LabelEditorContext";
 
 export function FooterPanel() {
   const editor = useLabelEditorState((s) => s.editor);
@@ -19,10 +19,10 @@ export function FooterPanel() {
         setZoom(editor.canvas.getZoom());
       };
 
-      on('mouse:wheel', handler);
+      on("mouse:wheel", handler);
       handler();
     },
-    [editor]
+    [editor],
   );
 
   return (

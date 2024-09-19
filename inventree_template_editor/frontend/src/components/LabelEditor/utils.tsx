@@ -6,25 +6,25 @@ type Unit = {
 
 export const units: Record<string, Unit> = {
   px: {
-    name: 'px',
+    name: "px",
     toPixel: (value) => value,
-    fromPixel: (value) => value
+    fromPixel: (value) => value,
   },
   mm: {
-    name: 'mm',
+    name: "mm",
     toPixel: (value, dpi) => (value / 25.4) * dpi,
-    fromPixel: (value, dpi) => (value / dpi) * 25.4
+    fromPixel: (value, dpi) => (value / dpi) * 25.4,
   },
   cm: {
-    name: 'cm',
+    name: "cm",
     toPixel: (value, dpi) => (value / 2.54) * dpi,
-    fromPixel: (value, dpi) => (value / dpi) * 2.54
+    fromPixel: (value, dpi) => (value / dpi) * 2.54,
   },
   in: {
-    name: 'in',
+    name: "in",
     toPixel: (value, dpi) => value * dpi,
-    fromPixel: (value, dpi) => value / dpi
-  }
+    fromPixel: (value, dpi) => value / dpi,
+  },
 };
 
 export type UnitName = keyof typeof units;

@@ -15,8 +15,8 @@ type Eventable = EventableShort | EventableLong;
 type RegisterFunctionOn<T extends Eventable> = T extends EventableShort
   ? T["on"]
   : T extends EventableLong
-  ? T["addEventListener"]
-  : never;
+    ? T["addEventListener"]
+    : never;
 
 export const createEventTracker = <T extends Eventable>(eventable: T) => {
   // Add event listeners and keep track of them to remove them on cleanup
@@ -48,13 +48,14 @@ export const createEventTracker = <T extends Eventable>(eventable: T) => {
 export function useEvents<T extends Eventable>(
   eventable: T | undefined,
   registerFunction: (on: RegisterFunctionOn<T>) => void,
-  dependencies: any[]
+  dependencies: any[],
 ) {
   useEffect(() => {
     if (!eventable) return;
     const eventTracker = createEventTracker(eventable);
-    // @ts-ignore-next-line
+    // @ts-expect-error - this is fine
     registerFunction(eventTracker.on || eventTracker.addEventListener);
     return eventTracker.cleanup;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventable, registerFunction, ...dependencies]);
 }

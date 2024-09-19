@@ -1,56 +1,50 @@
-import { t } from '@lingui/macro';
-import { Stack } from '@mantine/core';
-import {
-  IconAlignBoxCenterTop,
-  IconAlignBoxLeftTop,
-  IconAlignBoxRightTop,
-  IconTextSize
-} from '@tabler/icons-react';
-import { IText as FabricIText, FabricObject } from 'fabric';
-import { useEffect, useRef, useState } from 'react';
+import { t } from "@lingui/macro";
+import { Stack } from "@mantine/core";
+import { IconAlignBoxCenterTop, IconAlignBoxLeftTop, IconAlignBoxRightTop, IconTextSize } from "@tabler/icons-react";
+import { IText as FabricIText } from "fabric";
+import { useEffect, useRef, useState } from "react";
 
-import { LabelEditorObject } from '.';
-import { getFonts } from '../fonts';
-import { InputGroup } from '../panels/Components';
+import { getFonts } from "../fonts";
 import {
   CustomFabricObject,
   GeneralSettingBlock,
   buildStyle,
   c,
   getCustomFabricBaseObject,
-  styleHelper
-} from './_BaseObject';
+  styleHelper,
+} from "./_BaseObject";
 import {
   AngleInputGroup,
   ColorInputGroup,
   PositionInputGroup,
   SizeInputGroup,
-  useObjectInputGroupState
-} from './_InputGroups';
+  useObjectInputGroupState,
+} from "./_InputGroups";
+import { InputGroup } from "../panels/Components";
+
+import { LabelEditorObject } from ".";
 
 const FontInputGroup = () => {
   const [fonts, setFonts] = useState<{ value: string; label: string }[]>([]);
 
   useEffect(() => {
-    getFonts().then((fonts) =>
-      setFonts([...fonts].map((x) => ({ value: x, label: x })))
-    );
+    getFonts().then((fonts) => setFonts([...fonts].map((x) => ({ value: x, label: x }))));
   }, []);
 
   const stateRef = useRef({
     width: 0,
-    height: 0
+    height: 0,
   });
 
   const font = useObjectInputGroupState({
     name: t`Font`,
     icon: IconTextSize,
-    unitKey: 'size.unit',
-    valueKeys: ['size.value'],
-    connectionUnitKey: 'fontSizeUnit',
+    unitKey: "size.unit",
+    valueKeys: ["size.value"],
+    connectionUnitKey: "fontSizeUnit",
     connections: [
-      { objAttr: 'fontFamily', inputKey: 'family.value' },
-      { objAttr: 'fontSize', inputKey: 'size.value' }
+      { objAttr: "fontFamily", inputKey: "family.value" },
+      { objAttr: "fontSize", inputKey: "size.value" },
     ],
     beforeCanvasUpdate: (_values, obj) => {
       stateRef.current.width = obj.width as number;
@@ -58,29 +52,29 @@ const FontInputGroup = () => {
     },
     afterCanvasUpdate: (_values, obj) => {
       obj.set({
-        ...stateRef.current
+        ...stateRef.current,
       });
     },
     inputRows: [
       {
-        key: 'family',
+        key: "family",
         columns: [
           {
-            key: 'value',
-            type: 'select',
-            selectOptions: fonts
-          }
-        ]
+            key: "value",
+            type: "select",
+            selectOptions: fonts,
+          },
+        ],
       },
       {
-        key: 'size',
+        key: "size",
         columns: [
-          { key: 'value', type: 'number', label: t`Size` },
-          { key: 'unit', template: 'unit' }
-        ]
-      }
+          { key: "value", type: "number", label: t`Size` },
+          { key: "unit", template: "unit" },
+        ],
+      },
     ],
-    triggerUpdateEvents: ['object:modified']
+    triggerUpdateEvents: ["object:modified"],
   });
 
   return <InputGroup state={font} />;
@@ -89,49 +83,49 @@ const FontInputGroup = () => {
 const TextAlignInputGroup = () => {
   const stateRef = useRef({
     width: 0,
-    height: 0
+    height: 0,
   });
 
   const textAlign = useObjectInputGroupState({
     name: t`Text align`,
     icon: IconTextSize,
-    connections: [{ objAttr: 'textAlign', inputKey: 'horizontal.value' }],
+    connections: [{ objAttr: "textAlign", inputKey: "horizontal.value" }],
     beforeCanvasUpdate: (_values, obj) => {
       stateRef.current.width = obj.width as number;
       stateRef.current.height = obj.height as number;
     },
     afterCanvasUpdate: (_values, obj) => {
       obj.set({
-        ...stateRef.current
+        ...stateRef.current,
       });
     },
     inputRows: [
       {
-        key: 'horizontal',
+        key: "horizontal",
         columns: [
           {
-            key: 'value',
-            type: 'radio',
+            key: "value",
+            type: "radio",
             radioOptions: [
-              { value: 'left', icon: IconAlignBoxLeftTop },
-              { value: 'center', icon: IconAlignBoxCenterTop },
-              { value: 'right', icon: IconAlignBoxRightTop }
-            ]
-          }
-        ]
-      }
+              { value: "left", icon: IconAlignBoxLeftTop },
+              { value: "center", icon: IconAlignBoxCenterTop },
+              { value: "right", icon: IconAlignBoxRightTop },
+            ],
+          },
+        ],
+      },
     ],
-    triggerUpdateEvents: ['object:modified']
+    triggerUpdateEvents: ["object:modified"],
   });
 
   return <InputGroup state={textAlign} />;
 };
 
-class TextObject extends getCustomFabricBaseObject(FabricIText, ['fontSizeUnit']) {
-  static type = 'text';
+class TextObject extends getCustomFabricBaseObject(FabricIText, ["fontSizeUnit"]) {
+  static type = "text";
 
-  fontSize = 20
-  fontSizeUnit = 'mm'
+  fontSize = 20;
+  fontSizeUnit = "mm";
 
   private tmpWidth = 0;
   private tmpHeight = 0;
@@ -139,20 +133,20 @@ class TextObject extends getCustomFabricBaseObject(FabricIText, ['fontSizeUnit']
   constructor(text: string, props: any) {
     super(text, props);
 
-    this.fontSizeUnit = props.state.pageSettings.unit['length.unit'];
+    this.fontSizeUnit = props.state.pageSettings.unit["length.unit"];
 
     // lock dimensions when editing
-    this.on('editing:entered', () => {
+    this.on("editing:entered", () => {
       this.tmpWidth = this.width;
       this.tmpHeight = this.height;
     });
 
-    this.on('editing:exited', () => {
+    this.on("editing:exited", () => {
       this.width = this.tmpWidth;
       this.height = this.tmpHeight;
     });
 
-    this.on('changed', () => {
+    this.on("changed", () => {
       this.width = this.tmpWidth;
       this.height = this.tmpHeight;
     });
@@ -160,42 +154,42 @@ class TextObject extends getCustomFabricBaseObject(FabricIText, ['fontSizeUnit']
 }
 
 export const Text: LabelEditorObject = {
-  key: 'text',
-  name: t`Text`,
+  key: "text",
+  name: () => t`Text`,
   icon: IconTextSize,
-  defaultOpen: ['general', 'layout', 'text-options', 'style'],
+  defaultOpen: ["general", "layout", "text-options", "style"],
   settingBlocks: [
     GeneralSettingBlock,
     {
-      key: 'layout',
-      name: t`Layout`,
+      key: "layout",
+      name: () => t`Layout`,
       component: () => (
         <Stack>
           <PositionInputGroup />
           <AngleInputGroup />
           <SizeInputGroup />
         </Stack>
-      )
+      ),
     },
     {
-      key: 'text-options',
-      name: t`Text options`,
+      key: "text-options",
+      name: () => t`Text options`,
       component: () => (
         <Stack>
           <FontInputGroup />
           <TextAlignInputGroup />
         </Stack>
-      )
+      ),
     },
     {
-      key: 'style',
-      name: t`Style`,
+      key: "style",
+      name: () => t`Style`,
       component: () => (
         <Stack>
           <ColorInputGroup name={t`Color`} />
         </Stack>
-      )
-    }
+      ),
+    },
   ],
   fabricElement: TextObject as unknown as CustomFabricObject,
   export: {
@@ -204,14 +198,14 @@ export const Text: LabelEditorObject = {
         ...styleHelper.position(object),
         ...styleHelper.size(object),
         ...styleHelper.rotation(object),
-        ...styleHelper.color(object, 'fill'),
+        ...styleHelper.color(object, "fill"),
         `font-family: ${object.fontFamily};`,
         `font-size: ${c(object.fontSize, object.fontSizeUnit)};`,
-        `text-align: ${object.textAlign};`
+        `text-align: ${object.textAlign};`,
       ]);
     },
     content: (object, id) => {
       return `<div id="${id}">${object.text}</div>`;
-    }
-  }
+    },
+  },
 };
