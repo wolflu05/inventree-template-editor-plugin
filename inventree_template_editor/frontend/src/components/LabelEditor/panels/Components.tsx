@@ -187,7 +187,7 @@ export const InputGroup = <T extends any[]>({ state }: { state: UseInputGroupSta
           size="xs"
           disabled={input.disabled}
           label={input.label}
-          value={value[key]}
+          value={Math.round(value[key] * 10 ** 10) / 10 ** 10}
           onChange={(value) => setValue(key, value)}
           decimalScale={10}
           onBlur={() => state.onBlur?.(key, value[key], value, value, state)}
