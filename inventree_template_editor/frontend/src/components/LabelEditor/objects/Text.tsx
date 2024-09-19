@@ -131,6 +131,12 @@ class TextObject extends getCustomFabricBaseObject(FabricIText, ["fontSizeUnit"]
   private tmpHeight = 0;
 
   constructor(text: string, props: any) {
+    // no text was provided
+    if (typeof text === "object") {
+      props = text;
+      text = "Hello world";
+    }
+
     super(text, props);
 
     this.fontSizeUnit = props.state.pageSettings.unit["length.unit"];
