@@ -20,8 +20,8 @@ class RectangleObject extends getCustomFabricBaseObject(FabricRect) {
   constructor(props: any) {
     super(props);
 
-    this.width = props.width ?? 50;
-    this.height = props.height ?? 50;
+    this.width = props.width;
+    this.height = props.height;
   }
 }
 

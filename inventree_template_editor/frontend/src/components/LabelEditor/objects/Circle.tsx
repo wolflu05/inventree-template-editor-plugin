@@ -42,9 +42,9 @@ class CircleObject extends getCustomFabricBaseObject(FabricCircle, ["radiusUnit"
   constructor(props: any) {
     super(props);
 
-    this.width = props.width || 50;
-    this.height = props.height || 50;
-    this.radius = props.radius || 25;
+    this.width = props.width;
+    this.height = props.height;
+    this.radius = props.radius ?? this.width / 2;
     this.radiusUnit = props.radiusUnit || "mm";
   }
 }

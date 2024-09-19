@@ -27,6 +27,8 @@ export type LabelEditorObject = {
     style?: (object: Record<string, any>, id: string) => string;
     content?: (object: Record<string, any>, id: string) => string;
   };
+  initialWidth?: number;
+  initialHeight?: number;
 };
 
 export const LabelEditorObjects: LabelEditorObject[] = [Rectangle, Circle, Text, QrCode];

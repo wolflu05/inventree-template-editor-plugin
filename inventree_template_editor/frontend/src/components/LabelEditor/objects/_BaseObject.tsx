@@ -11,6 +11,8 @@ import { ObjectPanelBlock, SettingBlock } from ".";
 export type InitializeProps = {
   left: number;
   top: number;
+  width: number;
+  height: number;
   state: LabelEditorState;
 };
 

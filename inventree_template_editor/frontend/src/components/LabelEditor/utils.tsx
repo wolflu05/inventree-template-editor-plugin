@@ -48,3 +48,8 @@ export const pixelToUnit = (value: number, unit: UnitName) => {
 export const convertUnit = (value: number, from: UnitName, to: UnitName) => {
   return pixelToUnit(unitToPixel(value, from), to);
 };
+
+export const snapGrid = (n: number, gridSize: number, gridUnit: UnitName) => {
+  const grid = unitToPixel(gridSize, gridUnit);
+  return Math.round(n / grid) * grid;
+};

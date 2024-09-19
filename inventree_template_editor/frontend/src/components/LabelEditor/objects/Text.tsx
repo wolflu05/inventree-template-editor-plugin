@@ -135,8 +135,6 @@ class TextObject extends getCustomFabricBaseObject(FabricIText, ["fontSizeUnit"]
     // no text was provided, initial object creation
     if (typeof text === "object") {
       props = text;
-      if ((props as any).width === undefined) (props as any).width = 100;
-      if ((props as any).height === undefined) (props as any).height = 20;
       text = "Hello world";
     }
 
@@ -146,8 +144,8 @@ class TextObject extends getCustomFabricBaseObject(FabricIText, ["fontSizeUnit"]
     this.fontSizeUnit = (props as any).fontSizeUnit ?? props.state.pageSettings.unit["length.unit"] ?? "mm";
 
     // manually set the width and height if they are provided to avoid issues after enliven the object
-    this.width = (props as any).width;
-    this.height = (props as any).height;
+    this.width = props.width;
+    this.height = props.height;
 
     // clear the cache to avoid issues with the text is being rendered below the bounding box
     this._clearCache();
@@ -209,6 +207,8 @@ export const Text: LabelEditorObject = {
     },
   ],
   fabricElement: TextObject as unknown as CustomFabricObject,
+  initialWidth: 100,
+  initialHeight: 20,
   export: {
     style: (object, id) => {
       return buildStyle(id, [

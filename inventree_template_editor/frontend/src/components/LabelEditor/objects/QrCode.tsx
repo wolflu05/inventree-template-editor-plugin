@@ -152,9 +152,9 @@ class QrCodeObject extends getCustomFabricBaseObject(FabricObject, [
 
   constructor(props: any) {
     super(props);
-    console.log(props);
+
     this.data = props.data ?? "qr_data";
-    this.size = props.size ?? 40;
+    this.size = props.size ?? props.width;
     this.strokeWidth = props.strokeWidth ?? 0;
     this.stroke = props.stroke ?? "#000000";
     this.fill = props.fill ?? "#ffffff";
@@ -332,6 +332,8 @@ export const QrCode: LabelEditorObject = {
     },
   ],
   fabricElement: QrCodeObject,
+  initialWidth: 40,
+  initialHeight: 40,
   export: {
     style: (object, id) => {
       return buildStyle(id, [

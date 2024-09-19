@@ -5,6 +5,7 @@ import { useCallback } from "react";
 import { useLabelEditorState, useLabelEditorStore } from "../LabelEditorContext";
 import { LabelEditorObject, LabelEditorObjects } from "../objects";
 import { CustomFabricObject } from "../objects/_BaseObject";
+import { snapGrid } from "../utils";
 
 export function LeftPanel() {
   const editor = useLabelEditorState((s) => s.editor);
@@ -15,9 +16,19 @@ export function LeftPanel() {
       if (!editor) return;
 
       const state = labelEditorStore.getState();
+
+      const snap = (n: number) => {
+        return snapGrid(n, state.pageSettings.grid["size.size"], state.pageSettings.grid["size.unit"]);
+      };
+
+      const width = snap(component.initialWidth ?? 50);
+      const height = snap(component.initialHeight ?? 50);
+
       const obj = new component.fabricElement({
-        left: 10,
-        top: 10,
+        left: snap((state.pageWidth - width) / 2),
+        top: snap((state.pageHeight - height) / 2),
+        width,
+        height,
         state,
       });
 
