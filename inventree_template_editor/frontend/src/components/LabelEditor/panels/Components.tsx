@@ -220,6 +220,7 @@ export const InputGroup = <T extends any[]>({ state }: { state: UseInputGroupSta
     }
 
     if (input.type === "checkbox") {
+      const indeterminate = input.icon ? !value[key] : false;
       return (
         <Checkbox
           mt={10}
@@ -227,14 +228,22 @@ export const InputGroup = <T extends any[]>({ state }: { state: UseInputGroupSta
           style={{ alignSelf: "flex-end" }}
           styles={{
             label: { fontSize: "0.875rem", cursor: "pointer" },
-            input: { cursor: "pointer" },
+            input: {
+              cursor: "pointer",
+              ...(indeterminate
+                ? {
+                    background: "var(--mantine-color-gray-4)",
+                    border: "none",
+                  }
+                : {}),
+            },
           }}
           icon={({ className }) =>
             input.icon ? <input.icon className={className} /> : <IconCheck className={className} />
           }
           disabled={input.disabled}
           label={input.label ? input.label : undefined}
-          indeterminate={input.icon ? !value[key] : false}
+          indeterminate={indeterminate}
           checked={value[key]}
           onChange={(e) => {
             setValue(key, e.currentTarget.checked);
