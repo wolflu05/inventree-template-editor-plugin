@@ -39,20 +39,64 @@ const QrCodeDataInputGroup = () => {
   const circleRadius = useObjectInputGroupState({
     name: t`QR Data`,
     icon: IconQrcode,
-    connections: [{ objAttr: "data", inputKey: "data.value" }],
+    connections: [
+      { objAttr: "data", inputKey: "data.value" },
+      { objAttr: "ecl", inputKey: "ecl.value" },
+      { objAttr: "qr_version", inputKey: "version.value" },
+      { objAttr: "qr_optimize", inputKey: "optimize.value" },
+    ],
     inputRows: [
       {
         key: "data",
         columns: [
           {
             key: "value",
+            label: t`QR Data`,
             type: "text",
             tooltip: t`'qr_data' will be replaced with the qr data for the label item.`,
           },
         ],
       },
+      {
+        key: "ecl",
+        columns: [
+          {
+            label: t`Error correction level`,
+            key: "value",
+            type: "select",
+            selectOptions: [
+              { value: "L", label: "L (7%)" },
+              { value: "M", label: "M (15%)" },
+              { value: "Q", label: "Q (25%)" },
+              { value: "H", label: "H (30%)" },
+            ],
+          },
+        ],
+      },
+      {
+        key: "version",
+        columns: [
+          {
+            label: t`QR code Version`,
+            tooltip: t`If not set, the version will be automatically determined`,
+            key: "value",
+            type: "number",
+          },
+        ],
+      },
+      {
+        key: "optimize",
+        columns: [
+          {
+            label: t`Optimize data`,
+            key: "value",
+            type: "number",
+            tooltip: t`Data will be split into multiple chunks of at least this length using different modes (text, alphanumeric, binary) to optimize the QR code size. Set to '0' to disable.`,
+          },
+        ],
+      },
     ],
-    triggerUpdateEvents: ["object:modified"],
+    triggerUpdateEvents: ["object:scaling", "object:added", "object:modified"],
   });
 
   return <InputGroup state={circleRadius} />;
@@ -83,7 +127,14 @@ const QrCodeBorderInputGroup = () => {
 };
 
 // inspired by https://medium.com/@andras.tovishati/how-to-create-qr-code-object-type-in-fabric-js-e99b84e8d6c5
-class QrCodeObject extends getCustomFabricBaseObject(FabricObject, ["data", "border", "box_size"]) {
+class QrCodeObject extends getCustomFabricBaseObject(FabricObject, [
+  "data",
+  "border",
+  "box_size",
+  "ecl",
+  "qr_version",
+  "qr_optimize",
+]) {
   static type = "qrcode";
 
   data: string;
@@ -93,12 +144,15 @@ class QrCodeObject extends getCustomFabricBaseObject(FabricObject, ["data", "bor
   fill: string;
   border: number;
   box_size: number;
+  ecl: "L" | "M" | "Q" | "H";
+  qr_version: number | null;
+  qr_optimize: number;
 
   private path: any[] = [];
 
   constructor(props: any) {
     super(props);
-
+    console.log(props);
     this.data = props.data ?? "qr_data";
     this.size = props.size ?? 40;
     this.strokeWidth = props.strokeWidth ?? 0;
@@ -106,6 +160,9 @@ class QrCodeObject extends getCustomFabricBaseObject(FabricObject, ["data", "bor
     this.fill = props.fill ?? "#ffffff";
     this.border = props.border ?? 0;
     this.box_size = props.box_size ?? 20;
+    this.ecl = props.ecl ?? "M";
+    this.qr_optimize = props.qr_optimize ?? 1;
+    this.qr_version = props.qr_version ?? null;
     this.width = this.size;
     this.height = this.size;
 
@@ -135,7 +192,7 @@ class QrCodeObject extends getCustomFabricBaseObject(FabricObject, ["data", "bor
       height: this.size ?? 40,
       color: this.stroke ?? "#000000",
       background: this.fill ?? "#ffffff",
-      ecl: "L",
+      ecl: this.ecl ?? "M",
       join: true,
     });
     const svg = qr.svg();
@@ -289,8 +346,14 @@ export const QrCode: LabelEditorObject = {
         back_color: `'${object.fill}'`,
         box_size: object.box_size,
         border: object.border,
+        error_correction: `'${object.ecl}'`,
+        version: typeof object.qr_version !== "number" ? "None" : object.qr_version,
+        optimize: object.qr_optimize,
+        format: "'png'",
       };
+
       const argsStr = Object.entries(attributes)
+        .filter(([, value]) => value !== undefined && value !== null)
         .map(([key, value]) => `${key}=${value}`)
         .join(" ");
 
