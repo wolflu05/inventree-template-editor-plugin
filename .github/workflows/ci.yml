@@ -14,10 +14,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # pin@v3.5.3
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4.2.2
 
       - name: Setup python
-        uses: actions/setup-python@61a6322f88396a6271a6ee3565807d608ecaddd1 # pin@v4.7.0
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # pin@v5.6.0
         with:
           python-version: "3.10"
 
@@ -37,12 +37,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # pin@v3.5.3
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4.2.2
 
       - name: Setup node
-        uses: actions/setup-node@e33196f7422957bea03ed53f6fbb155025ffc7b8 # pin@v3.7.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # pin@v4.4.0
         with:
-          node-version: "18"
+          node-version: "23"
 
       - name: Install dependencies
         run: cd inventree_template_editor/frontend && npm ci
@@ -58,10 +58,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # pin@v3.5.3
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4.2.2
 
       - name: Setup node
-        uses: actions/setup-node@e33196f7422957bea03ed53f6fbb155025ffc7b8 # pin@v3.7.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # pin@v4.4.0
         with:
           node-version: "18"
 
@@ -72,7 +72,7 @@ jobs:
         run: cd inventree_template_editor/frontend && npm run build
 
       - name: Upload frontend artifact
-        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # pin@v3.1.2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # pin@v4.6.2
         with:
           name: frontend
           path: inventree_template_editor/static/dist
@@ -90,10 +90,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # pin@v3.5.3
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4.2.2
 
       - name: Setup python
-        uses: actions/setup-python@61a6322f88396a6271a6ee3565807d608ecaddd1 # pin@v4.7.0
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # pin@v5.6.0
         with:
           python-version: "3.10"
 
@@ -101,7 +101,7 @@ jobs:
         run: pip install --upgrade wheel setuptools twine build
 
       - name: Download frontend artifact
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # pin@v3.0.2
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # pin@v4.3.0
         with:
           name: frontend
           path: inventree_template_editor/static/dist
@@ -110,4 +110,4 @@ jobs:
         run: python3 -m build
 
       - name: Publish package to PyPI
-        uses: pypa/gh-action-pypi-publish@f8c70e705ffc13c3b4d1221169b84f12a75d6ca8 # pin@v1.8.8
+        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # pin@v1.12.4
