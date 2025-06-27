@@ -5,7 +5,7 @@
 
 A visual editor to quickly build InvenTree label templates.
 
-![](https://github.com/user-attachments/assets/2879e1ac-7fd5-4008-a740-34438620fb2b)
+![screenshot](https://github.com/user-attachments/assets/2879e1ac-7fd5-4008-a740-34438620fb2b)
 
 ## ⚙️ Installation
 
@@ -18,7 +18,7 @@ Install this plugin as follows:
 3. Search for the plugin in the table and activate it
 
 > [!IMPORTANT]
-> At least InvenTree v0.17 is required to use this plugin.
+> At least InvenTree v0.18 is required to use this plugin.
 
 ## 🏃 Usage
 
@@ -29,5 +29,5 @@ Goto the Admin Center > Label Templates and create a new Label template. Click o
 1. Install as editable install to your inventree installation via `pip install -e /path/to/inventree-template-editor-plugin`
 2. Enable the plugin
 3. Install js dependencies via `cd inventree_template_editor/frontend && npm ci`
-4. Enable the dev mode for the plugin to use the vite dev server (that you need to start via `npm run dev`) in the InvenTree `config.yml` via `customize.inventree_template_editor_plugin_dev: true`
+4. Enable the dev mode for the plugin to use the vite dev server (that you need to start via `npm run dev`) by setting the `INVENTREE_TEMPLATE_EDITOR_DEV=True` variable when running the inventree server.
 5. Restart InvenTree and start vite dev server via `npm run dev`
