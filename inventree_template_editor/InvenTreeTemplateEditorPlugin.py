@@ -5,13 +5,13 @@ from rest_framework.request import Request
 from plugin import InvenTreePlugin
 from plugin.mixins import UserInterfaceMixin
 
-from .version import TEMPLATE_EDITOR_PLUGIN_VERSION
+from . import PLUGIN_VERSION
 
 
 class InvenTreeTemplateEditorPlugin(InvenTreePlugin, UserInterfaceMixin):
     AUTHOR = "wolflu05"
     DESCRIPTION = "InvenTree template editor plugin"
-    VERSION = TEMPLATE_EDITOR_PLUGIN_VERSION
+    VERSION = PLUGIN_VERSION
 
     # UI Plugins were added with inventree 0.17.0
     # Interface was updated in 0.18.0
