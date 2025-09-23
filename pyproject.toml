@@ -30,7 +30,7 @@ classifiers = [
 Homepage = "https://github.com/wolflu05/inventree-template-editor-plugin"
 
 [project.entry-points."inventree_plugins"]
-InvenTreeTemplateEditorPlugin = "inventree_template_editor.InvenTreeTemplateEditorPlugin:InvenTreeTemplateEditorPlugin"
+InvenTreeTemplateEditorPlugin = "inventree_template_editor.core:InvenTreeTemplateEditorPlugin"
 
 [tool.setuptools.packages.find]
 where = [""]

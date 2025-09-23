@@ -22,7 +22,7 @@ class InvenTreeTemplateEditorPlugin(InvenTreePlugin, UserInterfaceMixin):
     NAME = "InvenTreeTemplateEditorPlugin"
 
     def get_ui_template_editors(self, request: Request, context, **kwargs):
-        if context.get('template_type') != 'labeltemplate':
+        if context.get("template_type") != "labeltemplate":
             return []
 
         return [
@@ -31,7 +31,9 @@ class InvenTreeTemplateEditorPlugin(InvenTreePlugin, UserInterfaceMixin):
                 "title": "Label Designer",
                 "icon": "ti:tools:outline",
                 "source": self.plugin_static_file(
-                    "labelEditor.dev.js" if os.environ.get('INVENTREE_TEMPLATE_EDITOR_DEV', False) else "dist/labelEditor.js"
+                    "labelEditor.dev.js"
+                    if os.environ.get("INVENTREE_TEMPLATE_EDITOR_DEV", False)
+                    else "dist/labelEditor.js"
                 ),
             }
         ]
