@@ -23,12 +23,14 @@ jobs:
 
       - name: Install style check dependencies
         run: |
-          pip install flake8==6.0.0
-          pip install pep8-naming==0.13.2
+          pip install -U ruff
+          pip install -U wheel setuptools twine build
 
       - name: Check style
-        run: |
-          flake8 .
+        run: ruff check
+
+      - name: Build Plugin
+        run: python -m build
 
   style-js:
     name: "💄 Style: js"
